@@ -376,7 +376,7 @@
   <!-- Region Right Central Triangle -->
   <path d="M 200,115 L 315,115 L 200,355 Z" fill="${triRightColor}" />
   <!-- Region Outer Gear Ring Frame -->
-  <path d="M 46.00 200.00 A 174.00 174.00 0 1 0 354.00 200.00 A 174.00 174.00 0 1 0 46.00 200.00 Z M 46.00 200.00 A 154.00 154.00 0 1 1 354.00 200.00 A 154.00 154.00 0 1 1 46.00 200.00 Z" fill="${colors.gearFrame}" fill-rule="evenodd" />
+  <circle cx="200" cy="200" r="164" fill="none" stroke="${colors.gearFrame}" stroke-width="20" />
   
   <!-- Metallic Rods Structure (Pristine non-overlapping design with centralized pin omitted) -->
   <g fill="none" stroke-linecap="round">
@@ -699,10 +699,14 @@
                     />
 
                     {/* Gear Frame outer rim */}
-                    <path
+                    <circle
                       id="svg-gearFrame"
-                      d={gearFramePath}
-                      fill={colors.gearFrame}
+                      cx="200"
+                      cy="200"
+                      r="164"
+                      fill="none"
+                      stroke={colors.gearFrame}
+                      strokeWidth="20"
                       {...getInteractiveProps('gearFrame')}
                     />
                   </g>
