@@ -438,18 +438,71 @@
         img.src = url;
       });
 
-      const handleCopyImageToClipboard = async () => {
-        try {
-          if (!navigator.clipboard || typeof ClipboardItem === 'undefined') {
-            throw new Error('Clipboard image support unavailable');
+      const copyImageViaExecCommand = (pngBlob) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          img.style.maxWidth = '1px';
+          img.style.maxHeight = '1px';
+          img.style.opacity = '0';
+          const container = document.createElement('div');
+          container.contentEditable = 'true';
+          container.style.position = 'fixed';
+          container.style.left = '-9999px';
+          container.style.width = '0';
+          container.style.height = '0';
+          container.style.overflow = 'hidden';
+          container.appendChild(img);
+          document.body.appendChild(container);
+
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNode(img);
+          selection.removeAllRanges();
+          selection.addRange(range);
+
+          const success = document.execCommand('copy');
+          selection.removeAllRanges();
+          document.body.removeChild(container);
+
+          if (success) {
+            resolve();
+          } else {
+            reject(new Error('execCommand copy failed'));
           }
-          const svgXml = getSvgXml();
+        };
+        reader.onerror = () => reject(new Error('Failed to read image data'));
+        reader.readAsDataURL(pngBlob);
+      });
+
+      const handleCopyImageToClipboard = async () => {
+        const svgXml = getSvgXml();
+        try {
           const pngBlob = await convertSvgToPngBlob(svgXml);
-          await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
-          triggerToast('作成画像をクリップボードにコピーしました！');
+
+          if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+            triggerToast('作成画像をクリップボードにコピーしました！');
+            return;
+          }
+
+          if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+            await copyImageViaExecCommand(pngBlob);
+            triggerToast('作成画像をクリップボードにコピーしました！');
+            return;
+          }
+
+          throw new Error('Clipboard image support unavailable');
         } catch (error) {
           console.error(error);
-          triggerToast('画像コピーに失敗しました。対応ブラウザをご確認ください。');
+          try {
+            await navigator.clipboard.writeText(svgXml);
+            triggerToast('画像コピーに非対応のため、SVGコードをクリップボードにコピーしました。');
+          } catch (fallbackError) {
+            console.error(fallbackError);
+            triggerToast('画像コピーに失敗しました。対応ブラウザか権限を確認してください。');
+          }
         }
       };
 

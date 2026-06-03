@@ -353,10 +353,72 @@
 </svg>`;
       };
 
-      const handleCopySvgCode = () => {
-        navigator.clipboard.writeText(getSvgXml())
-          .then(() => triggerToast('着色済みSVGコードをクリップボードにコピーしました！'))
-          .catch(() => triggerToast('コピーに失敗しました。'));
+      const copyImageViaExecCommand = (pngBlob) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          img.style.maxWidth = '1px';
+          img.style.maxHeight = '1px';
+          img.style.opacity = '0';
+          const container = document.createElement('div');
+          container.contentEditable = 'true';
+          container.style.position = 'fixed';
+          container.style.left = '-9999px';
+          container.style.width = '0';
+          container.style.height = '0';
+          container.style.overflow = 'hidden';
+          container.appendChild(img);
+          document.body.appendChild(container);
+
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNode(img);
+          selection.removeAllRanges();
+          selection.addRange(range);
+
+          const success = document.execCommand('copy');
+          selection.removeAllRanges();
+          document.body.removeChild(container);
+
+          if (success) {
+            resolve();
+          } else {
+            reject(new Error('execCommand copy failed'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read image data'));
+        reader.readAsDataURL(pngBlob);
+      });
+
+      const handleCopyImageToClipboard = async () => {
+        const svgXml = getSvgXml();
+        try {
+          const pngBlob = await convertSvgToPngBlob(svgXml);
+
+          if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+            triggerToast('作成画像をクリップボードにコピーしました！');
+            return;
+          }
+
+          if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+            await copyImageViaExecCommand(pngBlob);
+            triggerToast('作成画像をクリップボードにコピーしました！');
+            return;
+          }
+
+          throw new Error('Clipboard image support unavailable');
+        } catch (error) {
+          console.error(error);
+          try {
+            await navigator.clipboard.writeText(svgXml);
+            triggerToast('画像コピーに非対応のため、SVGコードをクリップボードにコピーしました。');
+          } catch (fallbackError) {
+            console.error(fallbackError);
+            triggerToast('画像コピーに失敗しました。対応ブラウザか権限を確認してください。');
+          }
+        }
       };
 
       const handleDownloadSvgFile = () => {
@@ -606,10 +668,10 @@
                 <span className="text-slate-500 text-xs font-semibold">📤 シミュレーションを書き出す:</span>
                 <div className="flex gap-2">
                   <button 
-                    onClick={handleCopySvgCode}
+                    onClick={handleCopyImageToClipboard}
                     className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 active:scale-95"
                   >
-                    📋 ソースをコピー
+                    📷 画像をコピー
                   </button>
                   <button 
                     onClick={handleDownloadSvgFile}
