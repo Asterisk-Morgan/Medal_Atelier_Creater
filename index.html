@@ -408,19 +408,23 @@
         const blob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const img = new Image();
+        img.crossOrigin = 'anonymous';
 
-        img.onload = () => {
+        img.onload = async () => {
           URL.revokeObjectURL(url);
+          const width = img.naturalWidth || 400;
+          const height = img.naturalHeight || 400;
           const canvas = document.createElement('canvas');
-          canvas.width = 400;
-          canvas.height = 400;
+          canvas.width = width;
+          canvas.height = height;
           const ctx = canvas.getContext('2d');
           if (!ctx) {
             reject(new Error('Canvas context unavailable'));
             return;
           }
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, width, height);
+          ctx.drawImage(img, 0, 0, width, height);
           canvas.toBlob((pngBlob) => {
             if (pngBlob) {
               resolve(pngBlob);
@@ -443,22 +447,26 @@
         reader.onload = () => {
           const img = document.createElement('img');
           img.src = reader.result;
-          img.style.maxWidth = '1px';
-          img.style.maxHeight = '1px';
-          img.style.opacity = '0';
+          img.style.width = '400px';
+          img.style.height = '400px';
+          img.style.opacity = '0.01';
+          img.style.display = 'block';
           const container = document.createElement('div');
           container.contentEditable = 'true';
           container.style.position = 'fixed';
           container.style.left = '-9999px';
-          container.style.width = '0';
-          container.style.height = '0';
+          container.style.width = '400px';
+          container.style.height = '400px';
           container.style.overflow = 'hidden';
+          container.style.lineHeight = '0';
+          container.style.whiteSpace = 'nowrap';
+          container.style.pointerEvents = 'none';
           container.appendChild(img);
           document.body.appendChild(container);
 
           const selection = window.getSelection();
           const range = document.createRange();
-          range.selectNode(img);
+          range.selectNodeContents(container);
           selection.removeAllRanges();
           selection.addRange(range);
 
@@ -476,21 +484,52 @@
         reader.readAsDataURL(pngBlob);
       });
 
+      const isMobileDevice = () => /iPad|iPhone|iPod|Android/i.test(navigator.userAgent);
+
+      const shareImageFallback = async (pngBlob) => {
+        if (!navigator.canShare || !navigator.share) {
+          return false;
+        }
+        const file = new File([pngBlob], 'emblem.png', { type: 'image/png' });
+        if (!navigator.canShare({ files: [file] })) {
+          return false;
+        }
+        await navigator.share({
+          files: [file],
+          title: 'Emblem Image',
+          text: '作成したエンブレム画像です。'
+        });
+        triggerToast('画像共有シートを開きました。コピーや保存が使えます。');
+        return true;
+      };
+
       const handleCopyImageToClipboard = async () => {
         const svgXml = getSvgXml();
         try {
           const pngBlob = await convertSvgToPngBlob(svgXml);
 
           if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
-            await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
-            triggerToast('作成画像をクリップボードにコピーしました！');
+            try {
+              await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+              triggerToast('作成画像をクリップボードにコピーしました！');
+              return;
+            } catch (clipboardError) {
+              console.warn('ClipboardItem copy failed:', clipboardError);
+            }
+          }
+
+          if (isMobileDevice() && await shareImageFallback(pngBlob)) {
             return;
           }
 
-          if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
-            await copyImageViaExecCommand(pngBlob);
-            triggerToast('作成画像をクリップボードにコピーしました！');
-            return;
+          if (!isMobileDevice() && document.queryCommandSupported && document.queryCommandSupported('copy')) {
+            try {
+              await copyImageViaExecCommand(pngBlob);
+              triggerToast('作成画像をクリップボードにコピーしました！');
+              return;
+            } catch (execError) {
+              console.warn('execCommand image copy failed:', execError);
+            }
           }
 
           throw new Error('Clipboard image support unavailable');
