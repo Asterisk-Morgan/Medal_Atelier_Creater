@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>星の紋章 塗り絵工房 - Emblem Color Craft</title>
+  <title>メダル工房 - Emblem Color Craft</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -124,63 +124,12 @@
           triangleRight: '#cca47c'
         },
         desc: '博物館に眠る古びた地図と真鍮の意匠'
-      },
-      {
-        name: '夜空の王冠 (Midnight Crown)',
-        colors: {
-          gearFrame: '#1e1b4b',
-          leftBackground: '#4c1d95',
-          rightBackground: '#ec4899',
-          triangleLeft: '#a78bfa',
-          triangleRight: '#a78bfa'
-        },
-        desc: '深夜の月明かりと神秘的な紫の輝き'
-      },
-      {
-        name: '炎の戦士 (Inferno Warrior)',
-        colors: {
-          gearFrame: '#7c2d12',
-          leftBackground: '#dc2626',
-          rightBackground: '#fbbf24',
-          triangleLeft: '#f97316',
-          triangleRight: '#f97316'
-        },
-        desc: '燃える炎と灼熱の砂漠を象徴する烈火の紋章'
-      },
-      {
-        name: '北極光 (Aurora Borealis)',
-        colors: {
-          gearFrame: '#0c4a6e',
-          leftBackground: '#0369a1',
-          rightBackground: '#06b6d4',
-          triangleLeft: '#22d3ee',
-          triangleRight: '#22d3ee'
-        },
-        desc: '北極圏の幻想的なオーロラが踊る空'
-      },
-      {
-        name: '秘密の庭園 (Secret Garden)',
-        colors: {
-          gearFrame: '#3f0f40',
-          leftBackground: '#5b21b6',
-          rightBackground: '#10b981',
-          triangleLeft: '#6ee7b7',
-          triangleRight: '#6ee7b7'
-        },
-        desc: '魔法の庭園に咲く幻想的な花'
       }
     ];
 
     const PRESET_PALETTE = [
-      '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0', '#f1f5f9', '#ffffff',
-      '#991b1b', '#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca',
-      '#ea580c', '#f97316', '#fb923c', '#fbbf24', '#fcd34d', '#fde047',
-      '#15803d', '#16a34a', '#22c55e', '#4ade80', '#86efac', '#bbf7d0',
-      '#0369a1', '#0284c7', '#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd',
-      '#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe', '#e0e7ff',
-      '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe',
-      '#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3',
-      '#1e293b', '#475569', '#64748b'
+      '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1', '#f1f5f9', '#ffffff',
+      '#EF4444', '#F59E0B', '#10B981', '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6'
     ];
 
     const REGION_INFO = {
@@ -404,53 +353,10 @@
 </svg>`;
       };
 
-      const convertSvgToPngBlob = (svgXml) => new Promise((resolve, reject) => {
-        const blob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const img = new Image();
-
-        img.onload = () => {
-          URL.revokeObjectURL(url);
-          const canvas = document.createElement('canvas');
-          canvas.width = 400;
-          canvas.height = 400;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) {
-            reject(new Error('Canvas context unavailable'));
-            return;
-          }
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          canvas.toBlob((pngBlob) => {
-            if (pngBlob) {
-              resolve(pngBlob);
-            } else {
-              reject(new Error('PNG blob creation failed'));
-            }
-          }, 'image/png');
-        };
-
-        img.onerror = () => {
-          URL.revokeObjectURL(url);
-          reject(new Error('SVG image load failed'));
-        };
-
-        img.src = url;
-      });
-
-      const handleCopyImageToClipboard = async () => {
-        try {
-          if (!navigator.clipboard || typeof ClipboardItem === 'undefined') {
-            throw new Error('Clipboard image support unavailable');
-          }
-          const svgXml = getSvgXml();
-          const pngBlob = await convertSvgToPngBlob(svgXml);
-          await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
-          triggerToast('作成画像をクリップボードにコピーしました！');
-        } catch (error) {
-          console.error(error);
-          triggerToast('画像コピーに失敗しました。対応ブラウザをご確認ください。');
-        }
+      const handleCopySvgCode = () => {
+        navigator.clipboard.writeText(getSvgXml())
+          .then(() => triggerToast('着色済みSVGコードをクリップボードにコピーしました！'))
+          .catch(() => triggerToast('コピーに失敗しました。'));
       };
 
       const handleDownloadSvgFile = () => {
@@ -525,7 +431,7 @@
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight flex items-center justify-center gap-2.5">
               <span>🧿</span>
-              星の紋章 塗り絵工房
+              メダル工房
             </h1>
             <p className="text-slate-500 text-sm max-w-lg mx-auto mt-2 leading-relaxed">
               直感的なクリック操作で、星の幾何学エンブレムを好みに彩色。
@@ -700,10 +606,10 @@
                 <span className="text-slate-500 text-xs font-semibold">📤 シミュレーションを書き出す:</span>
                 <div className="flex gap-2">
                   <button 
-                    onClick={handleCopyImageToClipboard}
+                    onClick={handleCopySvgCode}
                     className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 active:scale-95"
                   >
-                    📷 画像をコピー
+                    📋 ソースをコピー
                   </button>
                   <button 
                     onClick={handleDownloadSvgFile}
