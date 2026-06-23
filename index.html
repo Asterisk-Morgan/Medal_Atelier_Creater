@@ -245,7 +245,6 @@
         triggerToast('原画カラーを復元しました。');
       };
 
-      // 📋 配色データをテキストとしてコピーする機能
       const handleCopyColorData = () => {
         const triRightColor = syncTriangle ? colors.triangleLeft : colors.triangleRight;
         const colorDataTemplate = `{ name: '日本語名 (英名)', colors: { gearFrame: '${colors.gearFrame}', leftBackground: '${colors.leftBackground}', rightBackground: '${colors.rightBackground}', triangleLeft: '${colors.triangleLeft}', triangleRight: '${triRightColor}' }, desc: '説明' },`;
@@ -255,7 +254,6 @@
             .then(() => triggerToast('🎨 配色用コードをコピーしました！'))
             .catch(() => triggerToast('コピーに失敗しました。'));
         } else {
-          // Fallback for older browsers or non-secure contexts
           const textArea = document.createElement("textarea");
           textArea.value = colorDataTemplate;
           document.body.appendChild(textArea);
@@ -454,6 +452,7 @@
                     {activeRegion === 'gearFrame' && <circle cx="200" cy="200" r="174" fill="none" stroke="#f97316" strokeWidth="2" />}
                   </g>
 
+                  {/* ★修正箇所: 円に fill="none" を追加して黒塗りを回避 */}
                   <g style={{ pointerEvents: 'none' }}>
                     <circle cx="200" cy="200" r="154" fill="none" stroke="#1e293b" strokeWidth="3" />
                     <line x1="200" y1="46" x2="200" y2="354" stroke="#1e293b" strokeWidth="9" />
@@ -469,7 +468,7 @@
                     <line x1="315" y1="115" x2="145" y2="241" stroke="#1e293b" strokeWidth="9" />
                     <line x1="315" y1="115" x2="145" y2="241" stroke="#475569" strokeWidth="5" />
                     <circle cx="200" cy="200" r="174" fill="none" stroke="#1e293b" strokeWidth="3" />
-                    <circle cx="200" cy="200" r="170" stroke="#475569" strokeWidth="1" />
+                    <circle cx="200" cy="200" r="170" fill="none" stroke="#475569" strokeWidth="1" />
                   </g>
                 </svg>
               </div>
