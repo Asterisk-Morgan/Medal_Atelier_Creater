@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>メダル工房 - Emblem Color Craft</title>
-  <link rel="stylesheet" href="style.css">
   
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +46,7 @@
         root.innerHTML = '<div style="color:#dc2626; padding:40px; font-family:sans-serif; text-align:center;">' +
                          '<h2 style="font-weight:bold; font-size:1.5rem; margin-bottom:10px;">JavaScriptエラーが発生しました</h2>' +
                          '<p>' + event.message + '</p>' +
-                         '<p style="margin-top:20px; font-size:0.9rem; color:#64748b;">※F12キーを押して開発者ツールのConsoleタブをご確認ください。</p>' +
+                         '<p style="margin-top:20px; font-size:0.9rem; color:#64748b;">ファイルの文字コードが「UTF-8」で保存されているか確認してください。</p>' +
                          '</div>';
       }
     });
@@ -58,14 +57,13 @@
   <div id="root">
     <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #475569; font-family: sans-serif;">
       <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">🌀 システムを読み込み中...</div>
-      <p style="font-size: 0.9rem;">※数秒待ってもこの画面が消えない場合は、構文エラーが発生している可能性があります。</p>
+      <p style="font-size: 0.9rem;">画面が切り替わらない場合は、ブラウザのF12キーを押して「Console」タブのエラー内容をご確認ください。</p>
     </div>
   </div>
 
-  <script type="text/babel" data-presets="react,env">
+  <script type="text/babel" data-presets="react">
     const { useState, useEffect } = React;
 
-    // Default pristine colors
     const ORIGINAL_COLORS = {
       gearFrame: '#894819',
       leftBackground: '#1d4693',
@@ -74,7 +72,6 @@
       triangleRight: '#481f8f',
     };
 
-    // Base layout colors
     const BW_COLORS = {
       gearFrame: '#7f8c8d',
       leftBackground: '#ecf0f1',
@@ -83,7 +80,9 @@
       triangleRight: '#95a5a6',
     };
 
-    // フルカラーテンプレート復元
     const DESIGN_THEMES = [
       { name: '原画カラー (Original)', colors: ORIGINAL_COLORS, desc: '原画の美しさをそのまま再現した標準配色カラー', isOriginal: true },
-      { name: '紅蓮と宵闇 (Crimson & Twilight)', colors: { gearFrame: '#312e81', leftBackground: '#991b1b', rightBackground: '#06b6d4', triangleLeft: '#06b6d4', triangleRight: '#06b6d4' }, desc: 'サイ
+      { name: '紅蓮と宵闇 (Crimson & Twilight)', colors: { gearFrame: '#312e81', leftBackground: '#991b1b', rightBackground: '#06b6d4', triangleLeft: '#06b6d4', triangleRight: '#06b6d4' }, desc: 'サイバーでミステリアスな宇宙の紋章' },
+      { name: '翠樹の太古 (Primal Emerald)', colors: { gearFrame: '#064e3b', leftBackground: '#0f765e', rightBackground: '#10b981', triangleLeft: '#10b981', triangleRight: '#10b981' }, desc: '太古の神秘的な森林とエメラルドの輝き' },
+      { name: '黄金 of 砂漠砂 (Desert Royalty)', colors: { gearFrame: '#78350f', leftBackground: '#b45309', rightBackground: '#fbbf24', triangleLeft: '#fbbf24', triangleRight: '#fbbf24' }, desc: '気高い皇帝の砂漠宮殿とヴィンテージゴールド' },
+      { name: '桜木モダン (Cherry Blossom)', colors: { gearFrame: '#4c0519', leftBackground: '#f43f5e', rightBackground: '#fda4af', triangleLeft: '#fda4af', triangleRight: '#fda4af' }, desc:
