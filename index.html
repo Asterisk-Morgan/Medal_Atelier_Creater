@@ -61,9 +61,8 @@
     const RECOMMENDED_THEMES = [
       { name: '原画カラー (Original)', colors: ORIGINAL_COLORS, desc: '原画の美しさをそのまま再現した標準配色カラー', isOriginal: true },
       { name: '夢現 (Day=Dream)', colors: { gearFrame: '#990000', leftBackground: '#dbdbdb', rightBackground: '#dbdbdb', triangleLeft: '#fbee9d', triangleRight: '#6f5bd2' }, desc: '夢現な宇宙の紋章' },
-      { name: '冬桜 (Winter-Cherry)', colors: { gearFrame: '#94a3b8', leftBackground: '#fafdff', rightBackground: '#fafdff', triangleLeft: '#ec4899', triangleRight: '#06b6d4' }, desc: '復讐の冬桜の紋章' },
-      { name: '翡翠の影 (Jade Shadows)', colors: { gearFrame: '#7dd3fc', leftBackground: '#f1f5f9', rightBackground: '#334155', triangleLeft: '#22c55e', triangleRight: '#991b1b' }, desc: '対立する星座の紋章' }, 
-      ];
+      { name: '冬桜 (Winter-Cherry)', colors: { gearFrame: '#94a3b8', leftBackground: '#fafdff', rightBackground: '#fafdff', triangleLeft: '#ec4899', triangleRight: '#06b6d4' }, desc: '復讐の冬桜の紋章' }
+    ];
 
     // 分割2: 汎用配色セット
     const GENERAL_THEMES = [
@@ -76,11 +75,6 @@
       { name: '炎の戦士 (Inferno Warrior)', colors: { gearFrame: '#7c2d12', leftBackground: '#dc2626', rightBackground: '#fbbf24', triangleLeft: '#f97316', triangleRight: '#f97316' }, desc: '燃える炎と灼熱の砂漠を象徴する烈火の紋章' },
       { name: '北極光 (Aurora Borealis)', colors: { gearFrame: '#0c4a6e', leftBackground: '#0369a1', rightBackground: '#06b6d4', triangleLeft: '#22d3ee', triangleRight: '#22d3ee' }, desc: '北極圏の幻想的なオーロラが踊る空' },
       { name: '秘密の庭園 (Secret Garden)', colors: { gearFrame: '#3f0f40', leftBackground: '#5b21b6', rightBackground: '#10b981', triangleLeft: '#6ee7b7', triangleRight: '#6ee7b7' }, desc: '魔法の庭園に咲く幻想的な花' },
-      { name: '夜明けの焔 (Dawnfire)', colors: { gearFrame: '#f97316', leftBackground: '#fef3c7', rightBackground: '#fef3c7', triangleLeft: '#dc2626', triangleRight: '#dc2626' }, desc: '夜明けの焔の紋章' },
-      { name: '深海の碧 (Abyssal Blue)', colors: { gearFrame: '#0369a1', leftBackground: '#e0f2fe', rightBackground: '#e0f2fe', triangleLeft: '#0284c7', triangleRight: '#0284c7' }, desc: '深海の碧の紋章' },
-      { name: '夜空の星座 (Stellar Constellation)', colors: { gearFrame: '#1e293b', leftBackground: '#f8fafc', rightBackground: '#f8fafc', triangleLeft: '#475569', triangleRight: '#475569' }, desc: '夜空の星座の紋章' },
-      { name: '紅蓮の戦士 (Crimson Warrior)', colors: { gearFrame: '#7c2d12', leftBackground: '#fef3c7', rightBackground: '#fef3c7', triangleLeft: '#dc2626', triangleRight: '#dc2626' }, desc: '紅蓮の戦士の紋章' },
-      { name: '蒼氷の守護者 (Frost Guardian)', colors: { gearFrame: '#0a0e27', leftBackground: '#e0f7fa', rightBackground: '#e0f7fa', triangleLeft: '#0284c7', triangleRight: '#0284c7' }, desc: '蒼氷の守護者の紋章' },
       { name: 'スカンジナビアン (Scandinavian)', colors: { gearFrame: '#2c3e50', leftBackground: '#ecf0f1', rightBackground: '#bdc3c7', triangleLeft: '#34495e', triangleRight: '#34495e' }, desc: 'ミニマルで洗練された北欧デザインスタイル' },
       { name: 'シック (Chic)', colors: { gearFrame: '#1a1a1a', leftBackground: '#2d2d2d', rightBackground: '#d4af37', triangleLeft: '#f5e6d3', triangleRight: '#f5e6d3' }, desc: 'エレガントで洗練された高級感を演出' },
       { name: 'レトロ・ポップ (Retro Pop)', colors: { gearFrame: '#ff00ff', leftBackground: '#ffff00', rightBackground: '#00ffff', triangleLeft: '#ff006e', triangleRight: '#ff006e' }, desc: 'ポップで楽しい８０年代風の鮮やかな配色' },
@@ -235,6 +229,14 @@
 
       const handlePresetTheme = (theme) => {
         setColors({ ...theme.colors });
+        
+        // ★修正ポイント: 左と右の三角形の色が違うなら自動で連動をオフ、同じならオンにする
+        if (theme.colors.triangleLeft !== theme.colors.triangleRight) {
+          setSyncTriangle(false);
+        } else {
+          setSyncTriangle(true);
+        }
+
         const activeColor = theme.colors[activeRegion] || theme.colors['triangleLeft'];
         setBrushColor(activeColor);
         setHexInput(activeColor.replace('#', ''));
@@ -243,11 +245,13 @@
 
       const handleResetBw = () => {
         setColors({ ...BW_COLORS });
+        setSyncTriangle(true); // 下地カラーは左右同色なので連動オン
         triggerToast('下塗り下地カラーに切り替えました。');
       };
 
       const handleResetOriginal = () => {
         setColors({ ...ORIGINAL_COLORS });
+        setSyncTriangle(true); // 原画カラーは左右同色なので連動オン
         triggerToast('原画カラーを復元しました。');
       };
 
@@ -297,8 +301,8 @@
     <line x1="85" y1="115" x2="255" y2="241" stroke="#475569" stroke-width="5" />
     <line x1="315" y1="115" x2="145" y2="241" stroke="#1e293b" stroke-width="9" />
     <line x1="315" y1="115" x2="145" y2="241" stroke="#475569" stroke-width="5" />
-    <circle cx="200" cy="200" r="174" stroke="#1e293b" stroke-width="3" />
-    <circle cx="200" cy="200" r="170" stroke="#475569" stroke-width="1" />
+    <circle cx="200" cy="200" r="174" fill="none" stroke="#1e293b" stroke-width="3" />
+    <circle cx="200" cy="200" r="170" fill="none" stroke="#475569" strokeWidth="1" />
   </g>
 </svg>`;
       };
@@ -458,7 +462,6 @@
                     {activeRegion === 'gearFrame' && <circle cx="200" cy="200" r="174" fill="none" stroke="#f97316" strokeWidth="2" />}
                   </g>
 
-                  {/* ★修正箇所: 円に fill="none" を追加して黒塗りを回避 */}
                   <g style={{ pointerEvents: 'none' }}>
                     <circle cx="200" cy="200" r="154" fill="none" stroke="#1e293b" strokeWidth="3" />
                     <line x1="200" y1="46" x2="200" y2="354" stroke="#1e293b" strokeWidth="9" />
