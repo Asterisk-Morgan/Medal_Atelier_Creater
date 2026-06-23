@@ -520,7 +520,6 @@
     window.addEventListener('DOMContentLoaded', () => {
       const renderTarget = document.getElementById('root-render');
       
-      // 1. CDNライブラリの読み込み確認
       const missing = [];
       if (typeof window.React === 'undefined') missing.push('React');
       if (typeof window.ReactDOM === 'undefined') missing.push('ReactDOM');
@@ -530,29 +529,28 @@
         renderTarget.innerHTML = `
           <div style="color:#b91c1c; padding:30px; font-family:sans-serif; background:#fef2f2; border: 2px solid #fca5a5; max-width: 600px; margin: 40px auto; border-radius: 8px;">
             <h3 style="font-weight:bold; font-size:1.2rem; margin-bottom: 10px;">⚠️ ライブラリの読み込みに失敗しました</h3>
-            <p>ネットワーク設定やセキュリティソフトにより、以下のCDNがブロックされています:</p>
+            <p>以下のCDNがブロックされています:</p>
             <ul style="font-weight:bold; margin-bottom: 15px;"><li>${missing.join('</li><li>')}</li></ul>
-            <p style="font-size: 0.9rem;">広告ブロッカーの停止や、別のブラウザでの起動をお試しください。</p>
           </div>`;
         return;
       }
 
-      // 2. JSXコードの取得とコンパイル
       try {
         const rawJsx = document.getElementById('app-jsx').textContent;
-        // Babelをプログラム内部で直接呼び出す（これでブラウザのエラー隠蔽を突破します）
-        const compiled = Babel.transform(rawJsx, { presets: ['react'] }).code;
+        // Babelに「classic (旧仕様)」での変換を強制し、import文の自動生成を防ぐ
+        const compiled = Babel.transform(rawJsx, { 
+          presets: [
+            ['react', { runtime: 'classic' }]
+          ] 
+        }).code;
         
-        // 3. コンパイルされたコードの実行
         try {
-          // Functionコンストラクタを使用して安全にスコープを区切って実行
           new Function(compiled)();
         } catch (execError) {
           console.error(execError);
           renderTarget.innerHTML = `
             <div style="color:#b91c1c; padding:30px; font-family:sans-serif; background:#fef2f2; border: 2px solid #fca5a5; max-width: 800px; margin: 40px auto; border-radius: 8px;">
               <h3 style="font-weight:bold; font-size:1.2rem; margin-bottom: 10px;">⚠️ React 実行エラー</h3>
-              <p>コードは翻訳できましたが、実行中にエラーが発生しました。</p>
               <pre style="background:#fff; border:1px solid #fca5a5; padding:15px; border-radius:5px; font-size:0.85rem; overflow-x:auto;">${execError.message}\n${execError.stack}</pre>
             </div>`;
         }
@@ -561,7 +559,6 @@
         renderTarget.innerHTML = `
           <div style="color:#b91c1c; padding:30px; font-family:sans-serif; background:#fef2f2; border: 2px solid #fca5a5; max-width: 800px; margin: 40px auto; border-radius: 8px;">
             <h3 style="font-weight:bold; font-size:1.2rem; margin-bottom: 10px;">⚠️ JSX 構文・コンパイルエラー</h3>
-            <p>コード内に記述ミス（見えない特殊な空白や記号など）が存在します。</p>
             <pre style="background:#fff; border:1px solid #fca5a5; padding:15px; border-radius:5px; font-size:0.85rem; overflow-x:auto;">${compileError.message}</pre>
           </div>`;
       }
