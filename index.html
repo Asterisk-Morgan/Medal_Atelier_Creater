@@ -23,45 +23,21 @@
       margin: 0;
       padding: 0;
     }
-    #root {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    .font-mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .color-chip {
-      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .color-chip:hover {
-      transform: scale(1.15);
-    }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .color-chip { transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
+    .color-chip:hover { transform: scale(1.15); }
   </style>
-
-  <script>
-    window.addEventListener('error', function(event) {
-      const root = document.getElementById('root');
-      if (root) {
-        root.innerHTML = '<div style="color:#dc2626; padding:40px; font-family:sans-serif; text-align:center;">' +
-                         '<h2 style="font-weight:bold; font-size:1.5rem; margin-bottom:10px;">JavaScriptエラーが発生しました</h2>' +
-                         '<p>' + event.message + '</p>' +
-                         '<p style="margin-top:20px; font-size:0.9rem; color:#64748b;">ファイルの文字コードが「UTF-8」で保存されているか確認してください。</p>' +
-                         '</div>';
-      }
-    });
-  </script>
 </head>
 <body class="text-slate-900">
 
-  <div id="root">
+  <div id="root-render">
     <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #475569; font-family: sans-serif;">
-      <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">🌀 システムを読み込み中...</div>
-      <p style="font-size: 0.9rem;">画面が切り替わらない場合は、ブラウザのF12キーを押して「Console」タブのエラー内容をご確認ください。</p>
+      <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">🌀 アプリケーションを構築中...</div>
+      <p style="font-size: 0.9rem;">※自己診断プロトコル実行中...</p>
     </div>
   </div>
 
-  <script type="text/babel" data-presets="react">
+  <script id="app-jsx" type="text/plain">
     const { useState, useEffect } = React;
 
     const ORIGINAL_COLORS = {
@@ -85,4 +61,517 @@
       { name: '紅蓮と宵闇 (Crimson & Twilight)', colors: { gearFrame: '#312e81', leftBackground: '#991b1b', rightBackground: '#06b6d4', triangleLeft: '#06b6d4', triangleRight: '#06b6d4' }, desc: 'サイバーでミステリアスな宇宙の紋章' },
       { name: '翠樹の太古 (Primal Emerald)', colors: { gearFrame: '#064e3b', leftBackground: '#0f765e', rightBackground: '#10b981', triangleLeft: '#10b981', triangleRight: '#10b981' }, desc: '太古の神秘的な森林とエメラルドの輝き' },
       { name: '黄金 of 砂漠砂 (Desert Royalty)', colors: { gearFrame: '#78350f', leftBackground: '#b45309', rightBackground: '#fbbf24', triangleLeft: '#fbbf24', triangleRight: '#fbbf24' }, desc: '気高い皇帝の砂漠宮殿とヴィンテージゴールド' },
-      { name: '桜木モダン (Cherry Blossom)', colors: { gearFrame: '#4c0519', leftBackground: '#f43f5e', rightBackground: '#fda4af', triangleLeft: '#fda4af', triangleRight: '#fda4af' }, desc:
+      { name: '桜木モダン (Cherry Blossom)', colors: { gearFrame: '#4c0519', leftBackground: '#f43f5e', rightBackground: '#fda4af', triangleLeft: '#fda4af', triangleRight: '#fda4af' }, desc: '桜吹雪と深みのある紫が交錯する和風モダン' },
+      { name: '琥珀の古書物 (Brass Archive)', colors: { gearFrame: '#292524', leftBackground: '#78716c', rightBackground: '#cca47c', triangleLeft: '#cca47c', triangleRight: '#cca47c' }, desc: '博物館に眠る古びた地図と真鍮の意匠' },
+      { name: '夜空の王冠 (Midnight Crown)', colors: { gearFrame: '#1e1b4b', leftBackground: '#4c1d95', rightBackground: '#ec4899', triangleLeft: '#a78bfa', triangleRight: '#a78bfa' }, desc: '深夜の月明かりと神秘的な紫の輝き' },
+      { name: '炎の戦士 (Inferno Warrior)', colors: { gearFrame: '#7c2d12', leftBackground: '#dc2626', rightBackground: '#fbbf24', triangleLeft: '#f97316', triangleRight: '#f97316' }, desc: '燃える炎と灼熱の砂漠を象徴する烈火の紋章' },
+      { name: '北極光 (Aurora Borealis)', colors: { gearFrame: '#0c4a6e', leftBackground: '#0369a1', rightBackground: '#06b6d4', triangleLeft: '#22d3ee', triangleRight: '#22d3ee' }, desc: '北極圏の幻想的なオーロラが踊る空' },
+      { name: '秘密の庭園 (Secret Garden)', colors: { gearFrame: '#3f0f40', leftBackground: '#5b21b6', rightBackground: '#10b981', triangleLeft: '#6ee7b7', triangleRight: '#6ee7b7' }, desc: '魔法の庭園に咲く幻想的な花' },
+      { name: 'スカンジナビアン (Scandinavian)', colors: { gearFrame: '#2c3e50', leftBackground: '#ecf0f1', rightBackground: '#bdc3c7', triangleLeft: '#34495e', triangleRight: '#34495e' }, desc: 'ミニマルで洗練された北欧デザインスタイル' },
+      { name: 'シック (Chic)', colors: { gearFrame: '#1a1a1a', leftBackground: '#2d2d2d', rightBackground: '#d4af37', triangleLeft: '#f5e6d3', triangleRight: '#f5e6d3' }, desc: 'エレガントで洗練された高級感を演出' },
+      { name: 'レトロ・ポップ (Retro Pop)', colors: { gearFrame: '#ff00ff', leftBackground: '#ffff00', rightBackground: '#00ffff', triangleLeft: '#ff006e', triangleRight: '#ff006e' }, desc: 'ポップで楽しい８０年代風の鮮やかな配色' },
+      { name: '近未来SF風 (Sci-Fi Future)', colors: { gearFrame: '#0a0e27', leftBackground: '#0f3460', rightBackground: '#00d4ff', triangleLeft: '#ff006e', triangleRight: '#ff006e' }, desc: 'ネオンとダークの融合による近未来的ビジュアル' },
+      { name: 'ヴェイパーウェイブ (Vaporwave)', colors: { gearFrame: '#ff006e', leftBackground: '#ffd6e8', rightBackground: '#a0e7e5', triangleLeft: '#b28dff', triangleRight: '#b28dff' }, desc: 'デジタル的で退廃的な美学のレトロフューチャー' },
+      { name: 'ドリームコア (Dreamcore)', colors: { gearFrame: '#c1a0d9', leftBackground: '#f8bbd0', rightBackground: '#ffccbc', triangleLeft: '#c8e6c9', triangleRight: '#c8e6c9' }, desc: 'ファンシーで夢のような柔らかい配色' },
+      { name: 'ディープ (Deep)', colors: { gearFrame: '#0a0a0a', leftBackground: '#1a3a52', rightBackground: '#2d1b4e', triangleLeft: '#3d2a1f', triangleRight: '#3d2a1f' }, desc: '深く落ち着いた色合いによる神秘的な雰囲気' },
+      { name: 'ビビット (Vivid)', colors: { gearFrame: '#ff0080', leftBackground: '#0080ff', rightBackground: '#ff8000', triangleLeft: '#00ff80', triangleRight: '#00ff80' }, desc: '鮮烈で活発な色合いの高彩度配色' },
+      { name: 'パステル (Pastel)', colors: { gearFrame: '#d4a5a5', leftBackground: '#ffd6d6', rightBackground: '#ffffcc', triangleLeft: '#d4f1f4', triangleRight: '#d4f1f4' }, desc: '優しく淡い色合いの柔らかい印象' },
+      { name: '南国風 (Tropical)', colors: { gearFrame: '#8b4513', leftBackground: '#ffd700', rightBackground: '#00bfff', triangleLeft: '#ff8c00', triangleRight: '#ff8c00' }, desc: 'トロピカルな海と太陽を連想させる明るい配色' },
+      { name: 'ブライト (Bright)', colors: { gearFrame: '#005a87', leftBackground: '#ffeb3b', rightBackground: '#ff5722', triangleLeft: '#4caf50', triangleRight: '#4caf50' }, desc: '明るく活気のある高明度の配色' },
+      { name: 'ストロング (Strong)', colors: { gearFrame: '#d32f2f', leftBackground: '#1976d2', rightBackground: '#f57c00', triangleLeft: '#388e3c', triangleRight: '#388e3c' }, desc: 'パワフルで力強い印象の濃い配色' },
+      { name: 'ライト (Light)', colors: { gearFrame: '#757575', leftBackground: '#f5f5f5', rightBackground: '#e0e0e0', triangleLeft: '#c0c0c0', triangleRight: '#c0c0c0' }, desc: '明るく透き通った光のような淡い配色' },
+      { name: 'ソフト (Soft)', colors: { gearFrame: '#a29bbb', leftBackground: '#f0e6f6', rightBackground: '#e8d5f2', triangleLeft: '#d4c5e2', triangleRight: '#d4c5e2' }, desc: 'やさしく包み込むようなしなやかな配色' },
+      { name: 'ダル (Dull)', colors: { gearFrame: '#6b5b45', leftBackground: '#a89968', rightBackground: '#9b8b7e', triangleLeft: '#8b7d6b', triangleRight: '#8b7d6b' }, desc: 'くすんだ落ち着きのあるマットな配色' },
+      { name: 'ダーク (Dark)', colors: { gearFrame: '#0a0a0a', leftBackground: '#1a1a1a', rightBackground: '#2a2a2a', triangleLeft: '#3a3a3a', triangleRight: '#3a3a3a' }, desc: '深い黒を基調とした重厚で洗練された配色' },
+      { name: 'ペール (Pale)', colors: { gearFrame: '#c8b8c8', leftBackground: '#f5f0f5', rightBackground: '#ede8ed', triangleLeft: '#e8dfe8', triangleRight: '#e8dfe8' }, desc: '淡白で繊細な印象のかすかな色合い' },
+      { name: 'グレイッシュ (Grayish)', colors: { gearFrame: '#4a4a4a', leftBackground: '#9e9e9e', rightBackground: '#a8a8a8', triangleLeft: '#b0b0b0', triangleRight: '#b0b0b0' }, desc: 'グレーを基調とした落ち着きある色合い' },
+      { name: 'ダークグレイッシュ (Dark Grayish)', colors: { gearFrame: '#2a2a2a', leftBackground: '#4a4a4a', rightBackground: '#5a5a5a', triangleLeft: '#6a6a6a', triangleRight: '#6a6a6a' }, desc: 'ダークグレーを交えた深みのある色合い' }
+    ];
+
+    const PRESET_PALETTE = [
+      '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0', '#f1f5f9', '#ffffff',
+      '#991b1b', '#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca',
+      '#ea580c', '#f97316', '#fb923c', '#fbbf24', '#fcd34d', '#fde047',
+      '#15803d', '#16a34a', '#22c55e', '#4ade80', '#86efac', '#bbf7d0',
+      '#0369a1', '#0284c7', '#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd',
+      '#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe', '#e0e7ff',
+      '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe',
+      '#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3',
+      '#1e293b', '#475569', '#64748b'
+    ];
+
+    const REGION_INFO = {
+      gearFrame: { label: '外枠・円環 (Outer Ring)', desc: 'エンブレムの外郭を司る金属パーツ' },
+      leftBackground: { label: '左背景 (Left Shield)', desc: '左半分の背景領域' },
+      rightBackground: { label: '右背景 (Right Shield)', desc: '右半分の背景領域' },
+      triangleLeft: { label: '中央下三角形 (Central Triangle)', desc: '中央の逆三角形状シンボル' }
+    };
+
+    function App() {
+      const [colors, setColors] = useState({ ...ORIGINAL_COLORS });
+      const [activeRegion, setActiveRegion] = useState('gearFrame');
+      const [hoveredRegion, setHoveredRegion] = useState(null);
+      const [syncTriangle, setSyncTriangle] = useState(true);
+      const [toast, setToast] = useState(null);
+      const [brushColor, setBrushColor] = useState('#2563EB');
+      const [hexInput, setHexInput] = useState('2563EB');
+      const [showHowToUse, setShowHowToUse] = useState(false);
+
+      const triggerToast = (message) => {
+        setToast({ id: Date.now(), message });
+      };
+
+      useEffect(() => {
+        if (toast) {
+          const timer = setTimeout(() => setToast(null), 3000);
+          return () => clearTimeout(timer);
+        }
+      }, [toast]);
+
+      const getActiveRegionsList = () => {
+        const list = [
+          { id: 'gearFrame', label: '外枠・円環', desc: 'エンブレムの外郭を司る金属パーツ' },
+          { id: 'leftBackground', label: '左背景', desc: '左半分の背景領域' },
+          { id: 'rightBackground', label: '右背景', desc: '右半分の背景領域' }
+        ];
+        if (syncTriangle) {
+          list.push({ id: 'triangleLeft', label: '中央下三角形 (全体)', desc: '中央の逆三角形状シンボル' });
+        } else {
+          list.push({ id: 'triangleLeft', label: '中央下三角形・左側', desc: '中央の逆三角形状シンボルの左半分' });
+          list.push({ id: 'triangleRight', label: '中央下三角形・右側', desc: '中央の逆三角形状シンボルの右半分' });
+        }
+        return list;
+      };
+
+      const handleSelectRegion = (id) => {
+        let targetId = id;
+        if (syncTriangle && (id === 'triangleLeft' || id === 'triangleRight')) targetId = 'triangleLeft';
+        setActiveRegion(targetId);
+        const currentHex = colors[targetId] || '#ffffff';
+        setBrushColor(currentHex);
+        setHexInput(currentHex.replace('#', ''));
+      };
+
+      const handleRegionClick = (regionId) => {
+        let targetId = regionId;
+        if (syncTriangle && (regionId === 'triangleLeft' || regionId === 'triangleRight')) targetId = 'triangleLeft';
+        setActiveRegion(targetId);
+        setColors(prev => {
+          const next = { ...prev };
+          if (syncTriangle && (regionId === 'triangleLeft' || regionId === 'triangleRight')) {
+            next.triangleLeft = brushColor;
+            next.triangleRight = brushColor;
+          } else {
+            next[regionId] = brushColor;
+          }
+          return next;
+        });
+        setHexInput(brushColor.replace('#', ''));
+        triggerToast(`パーツを ${brushColor} で塗りつぶしました！`);
+      };
+
+      const selectBrushColor = (hex) => {
+        const cleanHex = hex.startsWith('#') ? hex : '#' + hex;
+        if (/^#[0-9A-F]{6}$/i.test(cleanHex)) {
+          setBrushColor(cleanHex);
+          setHexInput(cleanHex.replace('#', ''));
+          setColors(prev => {
+            const next = { ...prev };
+            if (syncTriangle && (activeRegion === 'triangleLeft' || activeRegion === 'triangleRight')) {
+              next.triangleLeft = cleanHex;
+              next.triangleRight = cleanHex;
+            } else {
+              next[activeRegion] = cleanHex;
+            }
+            return next;
+          });
+        }
+      };
+
+      const handleInputChange = (val) => {
+        const stripped = val.toUpperCase().replace('#', '').substring(0, 6);
+        setHexInput(stripped);
+        if (stripped.length === 6 && /^[0-9A-F]{6}$/i.test(stripped)) {
+          const formatted = '#' + stripped;
+          setBrushColor(formatted);
+          setColors(prev => {
+            const next = { ...prev };
+            if (syncTriangle && (activeRegion === 'triangleLeft' || activeRegion === 'triangleRight')) {
+              next.triangleLeft = formatted;
+              next.triangleRight = formatted;
+            } else {
+              next[activeRegion] = formatted;
+            }
+            return next;
+          });
+        }
+      };
+
+      const handleSyncToggle = () => {
+        const nextSync = !syncTriangle;
+        setSyncTriangle(nextSync);
+        if (nextSync) {
+          setColors(prev => ({ ...prev, triangleRight: prev.triangleLeft }));
+          if (activeRegion === 'triangleRight') setActiveRegion('triangleLeft');
+          triggerToast('中央下三角形の色を左右同期しました。');
+        } else {
+          triggerToast('下三角形を左右個別に調節可能にしました。');
+        }
+      };
+
+      const handlePresetTheme = (theme) => {
+        setColors({ ...theme.colors });
+        const activeColor = theme.colors[activeRegion] || theme.colors['triangleLeft'];
+        setBrushColor(activeColor);
+        setHexInput(activeColor.replace('#', ''));
+        triggerToast(`テーマ「${theme.name}」を適用しました！`);
+      };
+
+      const handleResetBw = () => {
+        setColors({ ...BW_COLORS });
+        triggerToast('下塗り下地カラーに切り替えました。');
+      };
+
+      const handleResetOriginal = () => {
+        setColors({ ...ORIGINAL_COLORS });
+        triggerToast('原画カラーを復元しました。');
+      };
+
+      const getSvgXml = () => {
+        const triRightColor = syncTriangle ? colors.triangleLeft : colors.triangleRight;
+        return `<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill="${colors.leftBackground}" />
+  <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill="${colors.rightBackground}" />
+  <path d="M 85,115 L 200,115 L 200,355 Z" fill="${colors.triangleLeft}" />
+  <path d="M 200,115 L 315,115 L 200,355 Z" fill="${triRightColor}" />
+  <circle cx="200" cy="200" r="164" fill="none" stroke="${colors.gearFrame}" stroke-width="20" />
+  <g fill="none" stroke-linecap="round">
+    <circle cx="200" cy="200" r="154" stroke="#1e293b" stroke-width="3" />
+    <line x1="200" y1="46" x2="200" y2="354" stroke="#1e293b" stroke-width="9" />
+    <line x1="200" y1="46" x2="200" y2="354" stroke="#475569" stroke-width="5" />
+    <line x1="85" y1="115" x2="315" y2="115" stroke="#1e293b" stroke-width="9" />
+    <line x1="85" y1="115" x2="315" y2="115" stroke="#475569" stroke-width="5" />
+    <line x1="85" y1="115" x2="200" y2="355" stroke="#1e293b" stroke-width="9" />
+    <line x1="85" y1="115" x2="200" y2="355" stroke="#475569" stroke-width="5" />
+    <line x1="315" y1="115" x2="200" y2="355" stroke="#1e293b" stroke-width="9" />
+    <line x1="315" y1="115" x2="200" y2="355" stroke="#475569" stroke-width="5" />
+    <line x1="85" y1="115" x2="255" y2="241" stroke="#1e293b" stroke-width="9" />
+    <line x1="85" y1="115" x2="255" y2="241" stroke="#475569" stroke-width="5" />
+    <line x1="315" y1="115" x2="145" y2="241" stroke="#1e293b" stroke-width="9" />
+    <line x1="315" y1="115" x2="145" y2="241" stroke="#475569" stroke-width="5" />
+    <circle cx="200" cy="200" r="174" stroke="#1e293b" stroke-width="3" />
+    <circle cx="200" cy="200" r="170" stroke="#475569" stroke-width="1" />
+  </g>
+</svg>`;
+      };
+
+      const convertSvgToPngBlob = (svgXml) => new Promise((resolve, reject) => {
+        const blob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = async () => {
+          URL.revokeObjectURL(url);
+          const canvas = document.createElement('canvas');
+          canvas.width = 400; canvas.height = 400;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, 400, 400);
+          ctx.drawImage(img, 0, 0, 400, 400);
+          canvas.toBlob((pngBlob) => {
+            if (pngBlob) resolve(pngBlob);
+            else reject(new Error('PNG blob creation failed'));
+          }, 'image/png');
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('SVG image load failed')); };
+        img.src = url;
+      });
+
+      const copyImageViaExecCommand = (pngBlob) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          img.style.width = '400px'; img.style.height = '400px';
+          img.style.opacity = '0.01'; img.style.display = 'block';
+          const container = document.createElement('div');
+          container.contentEditable = 'true';
+          container.style.position = 'fixed'; container.style.left = '-9999px';
+          container.appendChild(img);
+          document.body.appendChild(container);
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(container);
+          selection.removeAllRanges(); selection.addRange(range);
+          const success = document.execCommand('copy');
+          selection.removeAllRanges(); document.body.removeChild(container);
+          if (success) resolve(); else reject(new Error('execCommand copy failed'));
+        };
+        reader.onerror = () => reject(new Error('Failed to read image data'));
+        reader.readAsDataURL(pngBlob);
+      });
+
+      const isMobileDevice = () => /iPad|iPhone|iPod|Android/i.test(navigator.userAgent);
+
+      const handleCopyImageToClipboard = async () => {
+        const svgXml = getSvgXml();
+        try {
+          const pngBlob = await convertSvgToPngBlob(svgXml);
+          if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+            try {
+              await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+              triggerToast('作成画像をクリップボードにコピーしました！');
+              return;
+            } catch (e) {}
+          }
+          if (!isMobileDevice() && document.queryCommandSupported('copy')) {
+            await copyImageViaExecCommand(pngBlob);
+            triggerToast('作成画像をクリップボードにコピーしました！');
+            return;
+          }
+          throw new Error('Unsupported');
+        } catch (error) {
+          triggerToast('画像コピーに非対応のため、SVGコードをコピーしました。');
+          navigator.clipboard.writeText(svgXml).catch(()=>{});
+        }
+      };
+
+      const handleDownloadSvgFile = () => {
+        const text = getSvgXml();
+        const blob = new Blob([text], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'emblem_colored.svg';
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        triggerToast('SVGファイルとして書き出しました！');
+      };
+
+      const isHovered = (id) => {
+        if (hoveredRegion === id) return true;
+        if (syncTriangle && (id === 'triangleLeft' || id === 'triangleRight')) {
+          return hoveredRegion === 'triangleLeft' || hoveredRegion === 'triangleRight';
+        }
+        return false;
+      };
+
+      const isActive = (id) => {
+        if (activeRegion === id) return true;
+        if (syncTriangle && (id === 'triangleLeft' || id === 'triangleRight')) {
+          return activeRegion === 'triangleLeft' || activeRegion === 'triangleRight';
+        }
+        return false;
+      };
+
+      const getInteractiveProps = (id) => ({
+        onClick: () => handleRegionClick(id),
+        onMouseEnter: () => setHoveredRegion(id),
+        onMouseLeave: () => setHoveredRegion(null),
+        style: { cursor: 'pointer' },
+        className: 'transition-all duration-300'
+      });
+
+      return (
+        <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
+          {toast && (
+            <div className="fixed top-6 right-6 z-50 bg-slate-900 border border-slate-700 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-bold tracking-tight">{toast.message}</span>
+            </div>
+          )}
+
+          <header className="mb-10 text-center relative">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight flex items-center justify-center gap-2.5">
+              <span>🧿</span> メダル工房
+            </h1>
+            <div className="flex gap-2.5 justify-center mt-5">
+              <button onClick={handleResetOriginal} className="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg text-xs hover:bg-indigo-700 transition shadow-sm active:scale-95">🎨 原画カラー復元</button>
+              <button onClick={handleResetBw} className="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-300 transition shadow-sm active:scale-95">✏️ 下地モード</button>
+              <button onClick={() => setShowHowToUse(!showHowToUse)} className="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs hover:bg-slate-50 font-semibold">{showHowToUse ? '解説を閉じる' : '使い方 💬'}</button>
+            </div>
+          </header>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-7 flex flex-col items-center">
+              <div className="relative w-full max-w-md aspect-square bg-white border border-slate-150 p-6 rounded-3xl shadow-xl flex items-center justify-center">
+                <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-lg select-none" xmlns="http://www.w3.org/2000/svg">
+                  <g fillRule="evenodd">
+                    <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill={colors.leftBackground} {...getInteractiveProps('leftBackground')} />
+                    <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill={colors.rightBackground} {...getInteractiveProps('rightBackground')} />
+                    <path d="M 85,115 L 200,115 L 200,355 Z" fill={colors.triangleLeft} {...getInteractiveProps('triangleLeft')} />
+                    <path d="M 200,115 L 315,115 L 200,355 Z" fill={syncTriangle ? colors.triangleLeft : colors.triangleRight} {...getInteractiveProps('triangleRight')} />
+                    <circle cx="200" cy="200" r="164" fill="none" stroke={colors.gearFrame} strokeWidth="20" {...getInteractiveProps('gearFrame')} />
+                  </g>
+                  
+                  <g style={{ pointerEvents: 'none' }}>
+                    {hoveredRegion === 'leftBackground' && <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />}
+                    {hoveredRegion === 'rightBackground' && <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />}
+                    {isHovered('triangleLeft') && <path d="M 85,115 L 200,115 L 200,355 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />}
+                    {isHovered('triangleRight') && <path d="M 200,115 L 315,115 L 200,355 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />}
+                    {hoveredRegion === 'gearFrame' && <circle cx="200" cy="200" r="174" fill="none" stroke="#fbbf24" strokeWidth="3.5" />}
+                  </g>
+
+                  <g style={{ pointerEvents: 'none' }}>
+                    {activeRegion === 'leftBackground' && <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill="none" stroke="#f97316" strokeWidth="2" />}
+                    {activeRegion === 'rightBackground' && <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill="none" stroke="#f97316" strokeWidth="2" />}
+                    {isActive('triangleLeft') && <path d="M 85,115 L 200,115 L 200,355 Z" fill="none" stroke="#f97316" strokeWidth="2" />}
+                    {isActive('triangleRight') && <path d="M 200,115 L 315,115 L 200,355 Z" fill="none" stroke="#f97316" strokeWidth="2" />}
+                    {activeRegion === 'gearFrame' && <circle cx="200" cy="200" r="174" fill="none" stroke="#f97316" strokeWidth="2" />}
+                  </g>
+
+                  <g style={{ pointerEvents: 'none' }}>
+                    <circle cx="200" cy="200" r="154" fill="none" stroke="#1e293b" strokeWidth="3" />
+                    <line x1="200" y1="46" x2="200" y2="354" stroke="#1e293b" strokeWidth="9" />
+                    <line x1="200" y1="46" x2="200" y2="354" stroke="#475569" strokeWidth="5" />
+                    <line x1="85" y1="115" x2="315" y2="115" stroke="#1e293b" strokeWidth="9" />
+                    <line x1="85" y1="115" x2="315" y2="115" stroke="#475569" strokeWidth="5" />
+                    <line x1="85" y1="115" x2="200" y2="355" stroke="#1e293b" strokeWidth="9" />
+                    <line x1="85" y1="115" x2="200" y2="355" stroke="#475569" strokeWidth="5" />
+                    <line x1="315" y1="115" x2="200" y2="355" stroke="#1e293b" strokeWidth="9" />
+                    <line x1="315" y1="115" x2="200" y2="355" stroke="#475569" strokeWidth="5" />
+                    <line x1="85" y1="115" x2="255" y2="241" stroke="#1e293b" strokeWidth="9" />
+                    <line x1="85" y1="115" x2="255" y2="241" stroke="#475569" strokeWidth="5" />
+                    <line x1="315" y1="115" x2="145" y2="241" stroke="#1e293b" strokeWidth="9" />
+                    <line x1="315" y1="115" x2="145" y2="241" stroke="#475569" strokeWidth="5" />
+                    <circle cx="200" cy="200" r="174" fill="none" stroke="#1e293b" strokeWidth="3" />
+                    <circle cx="200" cy="200" r="170" fill="none" stroke="#475569" strokeWidth="1" />
+                  </g>
+                </svg>
+              </div>
+
+              <div className="w-full max-w-md mt-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3">
+                <span className="text-slate-500 text-xs font-semibold">📤 画像を書き出す:</span>
+                <div className="flex gap-2">
+                  <button onClick={handleCopyImageToClipboard} className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 active:scale-95">📷 コピー</button>
+                  <button onClick={handleDownloadSvgFile} className="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition flex items-center gap-1 active:scale-95">💾 SVGDL</button>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 space-y-6">
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md">
+                <h3 className="text-sm font-bold text-slate-800 mb-3">📐 対象のパーツを選択</h3>
+                <div className="space-y-2">
+                  {getActiveRegionsList().map((item) => {
+                    const isSelected = activeRegion === item.id || (item.id === 'triangleLeft' && activeRegion === 'triangleRight' && syncTriangle);
+                    return (
+                      <button key={item.id} onClick={() => handleSelectRegion(item.id)} className={`w-full text-left p-2.5 rounded-xl border transition flex items-center justify-between ${isSelected ? 'border-indigo-600 bg-indigo-50/40 shadow-inner' : 'border-slate-200 hover:bg-slate-50'}`}>
+                        <div className="flex items-center gap-3">
+                          <span className="w-5 h-5 rounded-full border border-slate-300 shadow-sm flex-shrink-0" style={{ backgroundColor: colors[item.id] || '#FFFFFF' }} />
+                          <div className="text-xs font-extrabold text-slate-700">{item.label}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="mt-4 p-3 bg-indigo-50/50 border border-dashed border-indigo-200 rounded-xl flex items-center justify-between gap-4">
+                  <div className="text-xs font-bold text-indigo-950">下三角形を左右連動する</div>
+                  <button onClick={handleSyncToggle} className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-150 ease-in-out focus:outline-none ${syncTriangle ? 'bg-indigo-600' : 'bg-slate-300'}`}>
+                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-150 ease-in-out ${syncTriangle ? 'translate-x-5' : 'translate-x-0'}`} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md">
+                <h3 className="text-sm font-bold text-slate-800 mb-3">🖌️ カラー塗りつぶし</h3>
+                <div className="grid grid-cols-7 gap-2 mb-4">
+                  {PRESET_PALETTE.map((hex) => (
+                    <button key={hex} onClick={() => selectBrushColor(hex)} className={`aspect-square rounded-full border border-slate-200 color-chip shadow-sm ${brushColor === hex ? 'ring-2 ring-indigo-600 scale-110' : ''}`} style={{ backgroundColor: hex }} />
+                  ))}
+                </div>
+                <div className="flex gap-2.5 items-center">
+                  <span className="text-slate-400 text-xs font-mono">#</span>
+                  <input type="text" value={hexInput} onChange={(e) => handleInputChange(e.target.value)} maxLength={6} className="flex-1 text-xs font-mono font-bold bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 uppercase" />
+                  <div className="w-8 h-8 rounded border border-slate-300 shadow-inner flex-shrink-0" style={{ backgroundColor: brushColor }} />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md h-80 overflow-y-auto">
+                <h3 className="text-sm font-bold text-slate-800 mb-3 sticky top-0 bg-white pt-1 pb-2">🌈 おすすめ配色セット</h3>
+                <div className="space-y-2.5">
+                  {DESIGN_THEMES.map((theme) => (
+                    <button key={theme.name} onClick={() => handlePresetTheme(theme)} className="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs font-bold text-slate-700">{theme.name}</span>
+                        <div className="flex items-center gap-1">
+                          {Object.values(theme.colors).map((c, idx) => (
+                            <span key={idx} className="w-2.5 h-2.5 rounded-full border border-slate-200" style={{ backgroundColor: c }} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-slate-400 font-normal">{theme.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root-render'));
+    root.render(<App />);
+  </script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const renderTarget = document.getElementById('root-render');
+      
+      // 1. CDNライブラリの読み込み確認
+      const missing = [];
+      if (typeof window.React === 'undefined') missing.push('React');
+      if (typeof window.ReactDOM === 'undefined') missing.push('ReactDOM');
+      if (typeof window.Babel === 'undefined') missing.push('Babel');
+      
+      if (missing.length > 0) {
+        renderTarget.innerHTML = `
+          <div style="color:#b91c1c; padding:30px; font-family:sans-serif; background:#fef2f2; border: 2px solid #fca5a5; max-width: 600px; margin: 40px auto; border-radius: 8px;">
+            <h3 style="font-weight:bold; font-size:1.2rem; margin-bottom: 10px;">⚠️ ライブラリの読み込みに失敗しました</h3>
+            <p>ネットワーク設定やセキュリティソフトにより、以下のCDNがブロックされています:</p>
+            <ul style="font-weight:bold; margin-bottom: 15px;"><li>${missing.join('</li><li>')}</li></ul>
+            <p style="font-size: 0.9rem;">広告ブロッカーの停止や、別のブラウザでの起動をお試しください。</p>
+          </div>`;
+        return;
+      }
+
+      // 2. JSXコードの取得とコンパイル
+      try {
+        const rawJsx = document.getElementById('app-jsx').textContent;
+        // Babelをプログラム内部で直接呼び出す（これでブラウザのエラー隠蔽を突破します）
+        const compiled = Babel.transform(rawJsx, { presets: ['react'] }).code;
+        
+        // 3. コンパイルされたコードの実行
+        try {
+          // Functionコンストラクタを使用して安全にスコープを区切って実行
+          new Function(compiled)();
+        } catch (execError) {
+          console.error(execError);
+          renderTarget.innerHTML = `
+            <div style="color:#b91c1c; padding:30px; font-family:sans-serif; background:#fef2f2; border: 2px solid #fca5a5; max-width: 800px; margin: 40px auto; border-radius: 8px;">
+              <h3 style="font-weight:bold; font-size:1.2rem; margin-bottom: 10px;">⚠️ React 実行エラー</h3>
+              <p>コードは翻訳できましたが、実行中にエラーが発生しました。</p>
+              <pre style="background:#fff; border:1px solid #fca5a5; padding:15px; border-radius:5px; font-size:0.85rem; overflow-x:auto;">${execError.message}\n${execError.stack}</pre>
+            </div>`;
+        }
+      } catch (compileError) {
+        console.error(compileError);
+        renderTarget.innerHTML = `
+          <div style="color:#b91c1c; padding:30px; font-family:sans-serif; background:#fef2f2; border: 2px solid #fca5a5; max-width: 800px; margin: 40px auto; border-radius: 8px;">
+            <h3 style="font-weight:bold; font-size:1.2rem; margin-bottom: 10px;">⚠️ JSX 構文・コンパイルエラー</h3>
+            <p>コード内に記述ミス（見えない特殊な空白や記号など）が存在します。</p>
+            <pre style="background:#fff; border:1px solid #fca5a5; padding:15px; border-radius:5px; font-size:0.85rem; overflow-x:auto;">${compileError.message}</pre>
+          </div>`;
+      }
+    });
+  </script>
+
+  <div class="mt-6 mb-8 text-center">
+    <a class="font-bold text-slate-600 hover:text-indigo-600 hover:underline transition" href="https://asterisk-morgan.github.io/M.M.I.C._Home/">
+      ホームに戻る
+    </a>
+  </div>
+</body>
+</html>
