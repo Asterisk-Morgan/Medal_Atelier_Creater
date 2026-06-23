@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>メダル工房 - Emblem Color Craft</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Tailwind CSS CDN -->
+  
+  <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- React and ReactDOM CDNs -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- React and ReactDOM (安定性の高い cdnjs に変更し、ローカルfile://対策でcrossoriginを削除) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   
-  <!-- Babel CDN for compiling JSX runtime in-browser -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Babel Standalone (cdnjsに変更) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -24,11 +24,17 @@
     body {
       font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
       background-color: #fff9e2;
+      margin: 0;
+      padding: 0;
+    }
+    #root {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
-    /* Simple scale on hover for dynamic feeling */
     .color-chip {
       transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -36,17 +42,35 @@
       transform: scale(1.15);
     }
   </style>
+
+  <!-- エラーキャッチ用スクリプト（画面が真っ白になるのを防ぐ） -->
+  <script>
+    window.addEventListener('error', function(event) {
+      const root = document.getElementById('root');
+      if (root) {
+        root.innerHTML = '<div style="color:#dc2626; padding:40px; font-family:sans-serif; text-align:center;">' +
+                         '<h2 style="font-weight:bold; font-size:1.5rem; margin-bottom:10px;">JavaScriptエラーが発生しました</h2>' +
+                         '<p>' + event.message + '</p>' +
+                         '<p style="margin-top:20px; font-size:0.9rem; color:#64748b;">※F12キーを押して開発者ツールのConsoleタブをご確認ください。</p>' +
+                         '</div>';
+      }
+    });
+  </script>
 </head>
-<body class="text-slate-900 min-h-screen" style="background-color: #fff9e2;">
+<body class="text-slate-900">
 
-  <!-- React root target -->
-  <div id="root"></div>
+  <!-- React root target (フォールバック用ローディング画面を設定) -->
+  <div id="root">
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #475569; font-family: sans-serif;">
+      <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">🌀 システムを読み込み中...</div>
+      <p style="font-size: 0.9rem;">※数秒待ってもこの画面が消えない場合、CDNへの通信が遮断されているか、構文エラーが発生しています。<br>ブラウザの「F12」キーを押してコンソール(Console)を確認してください。</p>
+    </div>
+  </div>
 
-  <!-- React Application using Babel Compilation -->
-  <script type="text/babel">
+  <!-- React Application (data-presetsを追加しBabelへ明示的に指示) -->
+  <script type="text/babel" data-presets="react,env">
     const { useState, useEffect } = React;
 
-    // Default pristine colors from professional designer original draft
     const ORIGINAL_COLORS = {
       gearFrame: '#894819',
       leftBackground: '#1d4693',
@@ -55,7 +79,6 @@
       triangleRight: '#481f8f',
     };
 
-    // Base layout colors for lineart-only draft coloring preparation
     const BW_COLORS = {
       gearFrame: '#7f8c8d',
       leftBackground: '#ecf0f1',
@@ -65,351 +88,26 @@
     };
 
     const DESIGN_THEMES = [
-      {
-        name: '原画カラー (Original)',
-        colors: ORIGINAL_COLORS,
-        desc: '原画の美しさをそのまま再現した標準配色カラー',
-        isOriginal: true
-      },
-      {
-        name: '紅蓮と宵闇 (Crimson & Twilight)',
-        colors: {
-          gearFrame: '#312e81',
-          leftBackground: '#991b1b',
-          rightBackground: '#06b6d4',
-          triangleLeft: '#06b6d4',
-          triangleRight: '#06b6d4'
-        },
-        desc: 'サイバーでミステリアスな宇宙の紋章'
-      },
-      {
-        name: '翠樹の太古 (Primal Emerald)',
-        colors: {
-          gearFrame: '#064e3b',
-          leftBackground: '#0f765e',
-          rightBackground: '#10b981',
-          triangleLeft: '#10b981',
-          triangleRight: '#10b981'
-        },
-        desc: '太古の神秘的な森林とエメラルドの輝き'
-      },
-      {
-        name: '黄金 of 砂漠砂 (Desert Royalty)',
-        colors: {
-          gearFrame: '#78350f',
-          leftBackground: '#b45309',
-          rightBackground: '#fbbf24',
-          triangleLeft: '#fbbf24',
-          triangleRight: '#fbbf24'
-        },
-        desc: '気高い皇帝の砂漠宮殿とヴィンテージゴールド'
-      },
-      {
-        name: '桜木モダン (Cherry Blossom)',
-        colors: {
-          gearFrame: '#4c0519',
-          leftBackground: '#f43f5e',
-          rightBackground: '#fda4af',
-          triangleLeft: '#fda4af',
-          triangleRight: '#fda4af'
-        },
-        desc: '桜吹雪と深みのある紫が交錯する和風モダン'
-      },
-      {
-        name: '琥珀の古書物 (Brass Archive)',
-        colors: {
-          gearFrame: '#292524',
-          leftBackground: '#78716c',
-          rightBackground: '#cca47c',
-          triangleLeft: '#cca47c',
-          triangleRight: '#cca47c'
-        },
-        desc: '博物館に眠る古びた地図と真鍮の意匠'
-      },
-      {
-        name: '夜空の王冠 (Midnight Crown)',
-        colors: {
-          gearFrame: '#1e1b4b',
-          leftBackground: '#4c1d95',
-          rightBackground: '#ec4899',
-          triangleLeft: '#a78bfa',
-          triangleRight: '#a78bfa'
-        },
-        desc: '深夜の月明かりと神秘的な紫の輝き'
-      },
-      {
-        name: '炎の戦士 (Inferno Warrior)',
-        colors: {
-          gearFrame: '#7c2d12',
-          leftBackground: '#dc2626',
-          rightBackground: '#fbbf24',
-          triangleLeft: '#f97316',
-          triangleRight: '#f97316'
-        },
-        desc: '燃える炎と灼熱の砂漠を象徴する烈火の紋章'
-      },
-      {
-        name: '北極光 (Aurora Borealis)',
-        colors: {
-          gearFrame: '#0c4a6e',
-          leftBackground: '#0369a1',
-          rightBackground: '#06b6d4',
-          triangleLeft: '#22d3ee',
-          triangleRight: '#22d3ee'
-        },
-        desc: '北極圏の幻想的なオーロラが踊る空'
-      },
-      {
-        name: '秘密の庭園 (Secret Garden)',
-        colors: {
-          gearFrame: '#3f0f40',
-          leftBackground: '#5b21b6',
-          rightBackground: '#10b981',
-          triangleLeft: '#6ee7b7',
-          triangleRight: '#6ee7b7'
-        },
-        desc: '魔法の庭園に咲く幻想的な花'
-      },
-      {
-        name: 'スカンジナビアン (Scandinavian)',
-        colors: {
-          gearFrame: '#2c3e50',
-          leftBackground: '#ecf0f1',
-          rightBackground: '#bdc3c7',
-          triangleLeft: '#34495e',
-          triangleRight: '#34495e'
-        },
-        desc: 'ミニマルで洗練された北欧デザインスタイル'
-      },
-      {
-        name: 'シック (Chic)',
-        colors: {
-          gearFrame: '#1a1a1a',
-          leftBackground: '#2d2d2d',
-          rightBackground: '#d4af37',
-          triangleLeft: '#f5e6d3',
-          triangleRight: '#f5e6d3'
-        },
-        desc: 'エレガントで洗練された高級感を演出'
-      },
-      {
-        name: 'レトロ・ポップ (Retro Pop)',
-        colors: {
-          gearFrame: '#ff00ff',
-          leftBackground: '#ffff00',
-          rightBackground: '#00ffff',
-          triangleLeft: '#ff006e',
-          triangleRight: '#ff006e'
-        },
-        desc: 'ポップで楽しい８０年代風の鮮やかな配色'
-      },
-      {
-        name: '近未来SF風 (Sci-Fi Future)',
-        colors: {
-          gearFrame: '#0a0e27',
-          leftBackground: '#0f3460',
-          rightBackground: '#00d4ff',
-          triangleLeft: '#ff006e',
-          triangleRight: '#ff006e'
-        },
-        desc: 'ネオンとダークの融合による近未来的ビジュアル'
-      },
-      {
-        name: 'ヴェイパーウェイブ (Vaporwave)',
-        colors: {
-          gearFrame: '#ff006e',
-          leftBackground: '#ffd6e8',
-          rightBackground: '#a0e7e5',
-          triangleLeft: '#b28dff',
-          triangleRight: '#b28dff'
-        },
-        desc: 'デジタル的で退廃的な美学のレトロフューチャー'
-      },
-      {
-        name: 'ドリームコア (Dreamcore)',
-        colors: {
-          gearFrame: '#c1a0d9',
-          leftBackground: '#f8bbd0',
-          rightBackground: '#ffccbc',
-          triangleLeft: '#c8e6c9',
-          triangleRight: '#c8e6c9'
-        },
-        desc: 'ファンシーで夢のような柔らかい配色'
-      },
-      {
-        name: 'ディープ (Deep)',
-        colors: {
-          gearFrame: '#0a0a0a',
-          leftBackground: '#1a3a52',
-          rightBackground: '#2d1b4e',
-          triangleLeft: '#3d2a1f',
-          triangleRight: '#3d2a1f'
-        },
-        desc: '深く落ち着いた色合いによる神秘的な雰囲気'
-      },
-      {
-        name: 'ビビット (Vivid)',
-        colors: {
-          gearFrame: '#ff0080',
-          leftBackground: '#0080ff',
-          rightBackground: '#ff8000',
-          triangleLeft: '#00ff80',
-          triangleRight: '#00ff80'
-        },
-        desc: '鮮烈で活発な色合いの高彩度配色'
-      },
-      {
-        name: 'パステル (Pastel)',
-        colors: {
-          gearFrame: '#d4a5a5',
-          leftBackground: '#ffd6d6',
-          rightBackground: '#ffffcc',
-          triangleLeft: '#d4f1f4',
-          triangleRight: '#d4f1f4'
-        },
-        desc: '優しく淡い色合いの柔らかい印象'
-      },
-      {
-        name: '南国風 (Tropical)',
-        colors: {
-          gearFrame: '#8b4513',
-          leftBackground: '#ffd700',
-          rightBackground: '#00bfff',
-          triangleLeft: '#ff8c00',
-          triangleRight: '#ff8c00'
-        },
-        desc: 'トロピカルな海と太陽を連想させる明るい配色'
-      },
-      {
-        name: 'ブライト (Bright)',
-        colors: {
-          gearFrame: '#005a87',
-          leftBackground: '#ffeb3b',
-          rightBackground: '#ff5722',
-          triangleLeft: '#4caf50',
-          triangleRight: '#4caf50'
-        },
-        desc: '明るく活気のある高明度の配色'
-      },
-      {
-        name: 'ストロング (Strong)',
-        colors: {
-          gearFrame: '#d32f2f',
-          leftBackground: '#1976d2',
-          rightBackground: '#f57c00',
-          triangleLeft: '#388e3c',
-          triangleRight: '#388e3c'
-        },
-        desc: 'パワフルで力強い印象の濃い配色'
-      },
-      {
-        name: 'ライト (Light)',
-        colors: {
-          gearFrame: '#757575',
-          leftBackground: '#f5f5f5',
-          rightBackground: '#e0e0e0',
-          triangleLeft: '#c0c0c0',
-          triangleRight: '#c0c0c0'
-        },
-        desc: '明るく透き通った光のような淡い配色'
-      },
-      {
-        name: 'ソフト (Soft)',
-        colors: {
-          gearFrame: '#a29bbb',
-          leftBackground: '#f0e6f6',
-          rightBackground: '#e8d5f2',
-          triangleLeft: '#d4c5e2',
-          triangleRight: '#d4c5e2'
-        },
-        desc: 'やさしく包み込むようなしなやかな配色'
-      },
-      {
-        name: 'ダル (Dull)',
-        colors: {
-          gearFrame: '#6b5b45',
-          leftBackground: '#a89968',
-          rightBackground: '#9b8b7e',
-          triangleLeft: '#8b7d6b',
-          triangleRight: '#8b7d6b'
-        },
-        desc: 'くすんだ落ち着きのあるマットな配色'
-      },
-      {
-        name: 'ダーク (Dark)',
-        colors: {
-          gearFrame: '#0a0a0a',
-          leftBackground: '#1a1a1a',
-          rightBackground: '#2a2a2a',
-          triangleLeft: '#3a3a3a',
-          triangleRight: '#3a3a3a'
-        },
-        desc: '深い黒を基調とした重厚で洗練された配色'
-      },
-      {
-        name: 'ペール (Pale)',
-        colors: {
-          gearFrame: '#c8b8c8',
-          leftBackground: '#f5f0f5',
-          rightBackground: '#ede8ed',
-          triangleLeft: '#e8dfe8',
-          triangleRight: '#e8dfe8'
-        },
-        desc: '淡白で繊細な印象のかすかな色合い'
-      },
-      {
-        name: 'グレイッシュ (Grayish)',
-        colors: {
-          gearFrame: '#4a4a4a',
-          leftBackground: '#9e9e9e',
-          rightBackground: '#a8a8a8',
-          triangleLeft: '#b0b0b0',
-          triangleRight: '#b0b0b0'
-        },
-        desc: 'グレーを基調とした落ち着きある色合い'
-      },
-      {
-        name: 'ダークグレイッシュ (Dark Grayish)',
-        colors: {
-          gearFrame: '#2a2a2a',
-          leftBackground: '#4a4a4a',
-          rightBackground: '#5a5a5a',
-          triangleLeft: '#6a6a6a',
-          triangleRight: '#6a6a6a'
-        },
-        desc: 'ダークグレーを交えた深みのある色合い'
-      }
+      { name: '原画カラー (Original)', colors: ORIGINAL_COLORS, desc: '原画の美しさをそのまま再現した標準配色カラー' },
+      { name: '紅蓮と宵闇 (Crimson & Twilight)', colors: { gearFrame: '#312e81', leftBackground: '#991b1b', rightBackground: '#06b6d4', triangleLeft: '#06b6d4', triangleRight: '#06b6d4' }, desc: 'サイバーでミステリアスな宇宙の紋章' },
+      { name: '翠樹の太古 (Primal Emerald)', colors: { gearFrame: '#064e3b', leftBackground: '#0f765e', rightBackground: '#10b981', triangleLeft: '#10b981', triangleRight: '#10b981' }, desc: '太古の神秘的な森林とエメラルドの輝き' },
+      { name: '黄金 of 砂漠砂 (Desert Royalty)', colors: { gearFrame: '#78350f', leftBackground: '#b45309', rightBackground: '#fbbf24', triangleLeft: '#fbbf24', triangleRight: '#fbbf24' }, desc: '気高い皇帝の砂漠宮殿とヴィンテージゴールド' },
+      { name: 'シック (Chic)', colors: { gearFrame: '#1a1a1a', leftBackground: '#2d2d2d', rightBackground: '#d4af37', triangleLeft: '#f5e6d3', triangleRight: '#f5e6d3' }, desc: 'エレガントで洗練された高級感を演出' },
+      { name: '近未来SF風 (Sci-Fi Future)', colors: { gearFrame: '#0a0e27', leftBackground: '#0f3460', rightBackground: '#00d4ff', triangleLeft: '#ff006e', triangleRight: '#ff006e' }, desc: 'ネオンとダークの融合による近未来的ビジュアル' }
     ];
 
     const PRESET_PALETTE = [
-      '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0', '#f1f5f9', '#ffffff',
-      '#991b1b', '#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca',
-      '#ea580c', '#f97316', '#fb923c', '#fbbf24', '#fcd34d', '#fde047',
-      '#15803d', '#16a34a', '#22c55e', '#4ade80', '#86efac', '#bbf7d0',
-      '#0369a1', '#0284c7', '#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd',
-      '#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe', '#e0e7ff',
-      '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe',
-      '#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3',
-      '#1e293b', '#475569', '#64748b'
+      '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1', '#ffffff',
+      '#991b1b', '#ef4444', '#fca5a5', '#ea580c', '#fb923c', '#fde047',
+      '#15803d', '#22c55e', '#bbf7d0', '#0369a1', '#0ea5e9', '#bae6fd',
+      '#6366f1', '#a5b4fc', '#8b5cf6', '#c4b5fd', '#ec4899', '#f9a8d4'
     ];
 
     const REGION_INFO = {
-      gearFrame: {
-        label: '外枠・円環 (Outer Ring)',
-        desc: 'エンブレムの外郭を司る、重厚な円形の金属構造パーツ'
-      },
-      leftBackground: {
-        label: '左背景 (Left Shield)',
-        desc: '左半分の背景領域。中央および外枠に囲まれています'
-      },
-      rightBackground: {
-        label: '右背景 (Right Shield)',
-        desc: '右半分の背景領域。対称性を生かして対比色を置くのも一興'
-      },
-      triangleLeft: {
-        label: '中央下三角形 (Central Triangle)',
-        desc: '中央の逆三角形状のエンブレムシンボルの全体 (左右同期中)'
-      }
+      gearFrame: { label: '外枠・円環 (Outer Ring)', desc: 'エンブレムの外郭を司る、重厚な金属構造パーツ' },
+      leftBackground: { label: '左背景 (Left Shield)', desc: '左半分の背景領域。中央および外枠に囲まれています' },
+      rightBackground: { label: '右背景 (Right Shield)', desc: '右半分の背景領域。対称性を生かして対比色を置くのも一興' },
+      triangleLeft: { label: '中央下三角形 (Central Triangle)', desc: '中央の逆三角形状のエンブレムシンボルの全体' }
     };
 
     function App() {
@@ -422,7 +120,6 @@
       const [hexInput, setHexInput] = useState('2563EB');
       const [showHowToUse, setShowHowToUse] = useState(false);
 
-      // Trigger standard toast feedback
       const triggerToast = (message) => {
         const id = Date.now();
         setToast({ id, message });
@@ -435,23 +132,21 @@
         }
       }, [toast]);
 
-      // Gets list of currently available regions dynamically depending on triangular sync
       const getActiveRegionsList = () => {
         const list = [
-          { id: 'gearFrame', label: '外枠・円環 (Outer Ring)', desc: 'エンブレムの外郭を司る、重厚な円形の金属構造パーツ' },
-          { id: 'leftBackground', label: '左背景 (Left Shield)', desc: '左半分の背景領域。中央および外枠に囲まれています' },
-          { id: 'rightBackground', label: '右背景 (Right Shield)', desc: '右半分の背景領域。対称性を生かして対比色を置くのも一興' }
+          { id: 'gearFrame', label: '外枠・円環 (Outer Ring)', desc: 'エンブレムの外郭を司る金属構造パーツ' },
+          { id: 'leftBackground', label: '左背景 (Left Shield)', desc: '左半分の背景領域' },
+          { id: 'rightBackground', label: '右背景 (Right Shield)', desc: '右半分の背景領域' }
         ];
         if (syncTriangle) {
-          list.push({ id: 'triangleLeft', label: '中央下三角形 (全体)', desc: '中央の逆三角形状のエンブレムシンボルの全体 (左右同期中)' });
+          list.push({ id: 'triangleLeft', label: '中央下三角形 (全体)', desc: '中央の逆三角形状のシンボル (左右同期中)' });
         } else {
-          list.push({ id: 'triangleLeft', label: '中央下三角形・左側', desc: '中央の逆三角形状シンボルの左半分パーツ' });
-          list.push({ id: 'triangleRight', label: '中央下三角形・右側', desc: '中央の逆三角形状シンボルの右半分パーツ' });
+          list.push({ id: 'triangleLeft', label: '中央下三角形・左側', desc: '中央の逆三角形状シンボルの左半分' });
+          list.push({ id: 'triangleRight', label: '中央下三角形・右側', desc: '中央の逆三角形状シンボルの右半分' });
         }
         return list;
       };
 
-      // Select dynamic part active region and load its color into brush
       const handleSelectRegion = (id) => {
         let targetId = id;
         if (syncTriangle && (id === 'triangleLeft' || id === 'triangleRight')) {
@@ -463,7 +158,6 @@
         setHexInput(currentHex.replace('#', ''));
       };
 
-      // Direct SVG element clicks
       const handleRegionClick = (regionId) => {
         let targetId = regionId;
         if (syncTriangle && (regionId === 'triangleLeft' || regionId === 'triangleRight')) {
@@ -482,16 +176,10 @@
           return next;
         });
 
-        // Sync local text input
         setHexInput(brushColor.replace('#', ''));
-
-        const partName = (syncTriangle && (regionId === 'triangleLeft' || regionId === 'triangleRight'))
-          ? '中央下三角形'
-          : (REGION_INFO[regionId] ? REGION_INFO[regionId].label.split(' ')[0] : (regionId === 'triangleRight' ? '中央下三角形・右' : '選択パーツ'));
-        triggerToast(`${partName} を ${brushColor} で塗りつぶしました！`);
+        triggerToast('色を塗りつぶしました！');
       };
 
-      // Helper to choose brush color from presets or palette clicks
       const selectBrushColor = (hex) => {
         const cleanHex = hex.startsWith('#') ? hex : '#' + hex;
         if (/^#[0-9A-F]{6}$/i.test(cleanHex)) {
@@ -510,7 +198,6 @@
         }
       };
 
-      // Handle custom user typed input (handles intermediate inputs correctly)
       const handleInputChange = (val) => {
         const stripped = val.toUpperCase().replace('#', '').substring(0, 6);
         setHexInput(stripped);
@@ -530,21 +217,15 @@
         }
       };
 
-      // Toggling central triangle coupling state
       const handleSyncToggle = () => {
         const nextSync = !syncTriangle;
         setSyncTriangle(nextSync);
         if (nextSync) {
-          setColors(prev => ({
-            ...prev,
-            triangleRight: prev.triangleLeft
-          }));
-          if (activeRegion === 'triangleRight') {
-            setActiveRegion('triangleLeft');
-          }
-          triggerToast('中央下三角形の色を左右同期（連動）しました。');
+          setColors(prev => ({ ...prev, triangleRight: prev.triangleLeft }));
+          if (activeRegion === 'triangleRight') setActiveRegion('triangleLeft');
+          triggerToast('中央下三角形の色を左右同期しました。');
         } else {
-          triggerToast('下三角形を左右個別にカラー調節可能にしました。');
+          triggerToast('下三角形を左右個別に調節可能にしました。');
         }
       };
 
@@ -553,42 +234,28 @@
         const activeColor = theme.colors[activeRegion] || theme.colors['triangleLeft'];
         setBrushColor(activeColor);
         setHexInput(activeColor.replace('#', ''));
-        triggerToast(`テーマ「${theme.name}」をインポートしました！`);
+        triggerToast(`テーマ「${theme.name}」を適用しました！`);
       };
 
       const handleResetBw = () => {
         setColors({ ...BW_COLORS });
-        const activeColor = BW_COLORS[activeRegion] || '#ffffff';
-        setBrushColor(activeColor);
-        setHexInput(activeColor.replace('#', ''));
-        triggerToast('下塗り下地カラー (モノトーン) に切り替えました。');
+        triggerToast('下塗り下地カラーに切り替えました。');
       };
 
       const handleResetOriginal = () => {
         setColors({ ...ORIGINAL_COLORS });
-        const activeColor = ORIGINAL_COLORS[activeRegion] || '#ffffff';
-        setBrushColor(activeColor);
-        setHexInput(activeColor.replace('#', ''));
-        triggerToast('原画カラー（本来のデザイン配色）を復元しました。');
+        triggerToast('原画カラーを復元しました。');
       };
 
-      // Generating live SVG XML for clipboard copy or direct download
       const getSvgXml = () => {
         const triRightColor = syncTriangle ? colors.triangleLeft : colors.triangleRight;
         return `<?xml version="1.0" encoding="utf-8"?>
 <svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
-  <!-- Region Left Background -->
   <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill="${colors.leftBackground}" />
-  <!-- Region Right Background -->
   <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill="${colors.rightBackground}" />
-  <!-- Region Left Central Triangle -->
   <path d="M 85,115 L 200,115 L 200,355 Z" fill="${colors.triangleLeft}" />
-  <!-- Region Right Central Triangle -->
   <path d="M 200,115 L 315,115 L 200,355 Z" fill="${triRightColor}" />
-  <!-- Region Outer Gear Ring Frame -->
   <circle cx="200" cy="200" r="164" fill="none" stroke="${colors.gearFrame}" stroke-width="20" />
-  
-  <!-- Metallic Rods Structure (Pristine non-overlapping design with centralized pin omitted) -->
   <g fill="none" stroke-linecap="round">
     <circle cx="200" cy="200" r="154" stroke="#1e293b" stroke-width="3" />
     <line x1="200" y1="46" x2="200" y2="354" stroke="#1e293b" stroke-width="9" />
@@ -599,160 +266,14 @@
     <line x1="85" y1="115" x2="200" y2="355" stroke="#475569" stroke-width="5" />
     <line x1="315" y1="115" x2="200" y2="355" stroke="#1e293b" stroke-width="9" />
     <line x1="315" y1="115" x2="200" y2="355" stroke="#475569" stroke-width="5" />
-    
-    <!-- Diagonal Rod 1 (Ends perfectly nested inside triangle boundary) -->
     <line x1="85" y1="115" x2="255" y2="241" stroke="#1e293b" stroke-width="9" />
     <line x1="85" y1="115" x2="255" y2="241" stroke="#475569" stroke-width="5" />
-    
-    <!-- Diagonal Rod 2 (Ends perfectly nested inside triangle boundary) -->
     <line x1="315" y1="115" x2="145" y2="241" stroke="#1e293b" stroke-width="9" />
     <line x1="315" y1="115" x2="145" y2="241" stroke="#475569" stroke-width="5" />
-    
     <circle cx="200" cy="200" r="174" stroke="#1e293b" stroke-width="3" />
     <circle cx="200" cy="200" r="170" stroke="#475569" stroke-width="1" />
   </g>
 </svg>`;
-      };
-
-      const convertSvgToPngBlob = (svgXml) => new Promise((resolve, reject) => {
-        const blob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-
-        img.onload = async () => {
-          URL.revokeObjectURL(url);
-          const width = img.naturalWidth || 400;
-          const height = img.naturalHeight || 400;
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) {
-            reject(new Error('Canvas context unavailable'));
-            return;
-          }
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, width, height);
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob((pngBlob) => {
-            if (pngBlob) {
-              resolve(pngBlob);
-            } else {
-              reject(new Error('PNG blob creation failed'));
-            }
-          }, 'image/png');
-        };
-
-        img.onerror = () => {
-          URL.revokeObjectURL(url);
-          reject(new Error('SVG image load failed'));
-        };
-
-        img.src = url;
-      });
-
-      const copyImageViaExecCommand = (pngBlob) => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const img = document.createElement('img');
-          img.src = reader.result;
-          img.style.width = '400px';
-          img.style.height = '400px';
-          img.style.opacity = '0.01';
-          img.style.display = 'block';
-          const container = document.createElement('div');
-          container.contentEditable = 'true';
-          container.style.position = 'fixed';
-          container.style.left = '-9999px';
-          container.style.width = '400px';
-          container.style.height = '400px';
-          container.style.overflow = 'hidden';
-          container.style.lineHeight = '0';
-          container.style.whiteSpace = 'nowrap';
-          container.style.pointerEvents = 'none';
-          container.appendChild(img);
-          document.body.appendChild(container);
-
-          const selection = window.getSelection();
-          const range = document.createRange();
-          range.selectNodeContents(container);
-          selection.removeAllRanges();
-          selection.addRange(range);
-
-          const success = document.execCommand('copy');
-          selection.removeAllRanges();
-          document.body.removeChild(container);
-
-          if (success) {
-            resolve();
-          } else {
-            reject(new Error('execCommand copy failed'));
-          }
-        };
-        reader.onerror = () => reject(new Error('Failed to read image data'));
-        reader.readAsDataURL(pngBlob);
-      });
-
-      const isMobileDevice = () => /iPad|iPhone|iPod|Android/i.test(navigator.userAgent);
-
-      const shareImageFallback = async (pngBlob) => {
-        if (!navigator.canShare || !navigator.share) {
-          return false;
-        }
-        const file = new File([pngBlob], 'emblem.png', { type: 'image/png' });
-        if (!navigator.canShare({ files: [file] })) {
-          return false;
-        }
-        await navigator.share({
-          files: [file],
-          title: 'Emblem Image',
-          text: '作成したエンブレム画像です。'
-        });
-        triggerToast('画像共有シートを開きました。コピーや保存が使えます。');
-        return true;
-      };
-
-      const handleCopyImageToClipboard = async () => {
-        const svgXml = getSvgXml();
-        try {
-          const pngBlob = await convertSvgToPngBlob(svgXml);
-
-          if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
-            try {
-              await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
-              triggerToast('作成画像をクリップボードにコピーしました！');
-              return;
-            } catch (clipboardError) {
-              console.warn('ClipboardItem copy failed:', clipboardError);
-            }
-          }
-
-          if (isMobileDevice() && await shareImageFallback(pngBlob)) {
-            return;
-          }
-
-          if (!isMobileDevice() && document.queryCommandSupported && document.queryCommandSupported('copy')) {
-            try {
-              await copyImageViaExecCommand(pngBlob);
-              triggerToast('作成画像をクリップボードにコピーしました！');
-              return;
-            } catch (execError) {
-              console.warn('execCommand image copy failed:', execError);
-            }
-          }
-
-          throw new Error('Clipboard image support unavailable');
-        } catch (error) {
-          console.error(error);
-          try {
-            await navigator.clipboard.writeText(svgXml);
-            triggerToast('画像コピーに非対応のため、SVGコードをクリップボードにコピーしました。');
-          } catch (fallbackError) {
-            console.error(fallbackError);
-            triggerToast('画像コピーに失敗しました。対応ブラウザか権限を確認してください。');
-          }
-        }
       };
 
       const handleDownloadSvgFile = () => {
@@ -768,15 +289,6 @@
         URL.revokeObjectURL(url);
         triggerToast('SVGファイルとして書き出しました！');
       };
-
-      // Math definitions for Outer circle rendering & Inner cutouts
-      const rOuter = 174;
-      const rHole = 154;
-      const cx = 200;
-      const cy = 200;
-      const outerPath = `M ${(cx - rOuter).toFixed(2)} ${cy.toFixed(2)} A ${rOuter.toFixed(2)} ${rOuter.toFixed(2)} 0 1 0 ${(cx + rOuter).toFixed(2)} ${cy.toFixed(2)} A ${rOuter.toFixed(2)} ${rOuter.toFixed(2)} 0 1 0 ${(cx - rOuter).toFixed(2)} ${cy.toFixed(2)} Z`;
-      const innerPath = ` M ${(cx - rHole).toFixed(2)} ${cy.toFixed(2)} A ${rHole.toFixed(2)} ${rHole.toFixed(2)} 0 1 1 ${(cx + rHole).toFixed(2)} ${cy.toFixed(2)} A ${rHole.toFixed(2)} ${rHole.toFixed(2)} 0 1 1 ${(cx - rHole).toFixed(2)} ${cy.toFixed(2)} Z`;
-      const gearFramePath = outerPath + innerPath;
 
       const isHovered = (id) => {
         if (hoveredRegion === id) return true;
@@ -802,369 +314,140 @@
         className: 'transition-all duration-300'
       });
 
-      const getRegionLabel = (id) => {
-        if (id === 'triangleLeft' && syncTriangle) {
-          return '中央下三角形';
-        }
-        return REGION_INFO[id] ? REGION_INFO[id].label.split(' ')[0] : (id === 'triangleRight' ? '中央三角形・右' : '選択箇所');
-      };
-
       return (
         <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
           
-          {/* TOAST SYSTEM */}
           {toast && (
-            <div className="fixed top-6 right-6 z-50 bg-slate-900 border border-slate-700 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce">
+            <div className="fixed top-6 right-6 z-50 bg-slate-900 border border-slate-700 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-bold tracking-tight">{toast.message}</span>
+              <span className="text-xs font-bold">{toast.message}</span>
             </div>
           )}
 
-          {/* MAIN COLUMN OVERVIEW */}
           <header className="mb-10 text-center relative">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 border border-indigo-150 rounded-full text-indigo-700 text-[11px] font-black tracking-wider uppercase mb-3">
-              📐 SVG Geometry Lab
-            </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight flex items-center justify-center gap-2.5">
-              <span>🧿</span>
-              メダル工房
-            </h1>
-            <p className="text-slate-500 text-sm max-w-lg mx-auto mt-2 leading-relaxed">
-              直感的なクリック操作で、星の幾何学エンブレムを好みに彩色。
-              はみ出しのない精密な設計、左右対称の逆三角同期に対応しています。
-            </p>
-
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight mb-3">🧿 メダル工房</h1>
+            
             <div className="flex gap-2.5 justify-center mt-5">
-              <button 
-                onClick={handleResetOriginal}
-                className="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg text-xs hover:bg-indigo-700 transition shadow-sm active:scale-95"
-              >
-                🎨 原画カラー (標準) を読み込む
-              </button>
-              <button 
-                onClick={handleResetBw}
-                className="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-300 transition shadow-sm active:scale-95"
-              >
-                ✏️ 下地モード (白・グレー)
-              </button>
-              <button 
-                onClick={() => setShowHowToUse(!showHowToUse)}
-                className="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs hover:bg-slate-50 font-semibold"
-              >
-                {showHowToUse ? '解説を閉じる' : '使い方 💬'}
-              </button>
+              <button onClick={handleResetOriginal} className="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg text-xs hover:bg-indigo-700 transition">🎨 原画カラー復元</button>
+              <button onClick={handleResetBw} className="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-300 transition">✏️ 下地モード</button>
             </div>
-
-            {showHowToUse && (
-              <div className="max-w-2xl mx-auto mt-6 p-5 bg-white border border-slate-200 rounded-2xl text-left text-xs text-slate-600 space-y-2 shadow-inner animate-fadeIn">
-                <p className="font-bold text-slate-800 text-sm border-b pb-1.5 mb-2">💡 簡単な使い方・設計のポイント</p>
-                <p className="flex gap-2"><span className="text-indigo-600 font-bold">1.</span> <strong>パレットでブラシを選択:</strong> 画面右のカラー一覧からお好みの色を選ぶ、もしくは直接HEXコードを入力します。</p>
-                <p className="flex gap-2"><span className="text-indigo-600 font-bold">2.</span> <strong>パーツをクリックして着色:</strong> 左側のエンブレム画像、または右側のパーツ一覧をクリックして直接色を流し込めます。</p>
-                <p className="flex gap-2"><span className="text-indigo-600 font-bold">3.</span> <strong>中心のX字とはみ出し修正:</strong> 斜め下のライン（Diagonal Rod）は、中央下三角形の斜辺にぴったり美しく留まります。また、中央のピン点を廃止し、よりシャープに仕上がっています。</p>
-                <p className="flex gap-2"><span className="text-indigo-600 font-bold">4.</span> <strong>三角の左右同期:</strong> 「下三角形の左右同期」スイッチをONにすると、中央下側の逆三角を常に1セットの単体パーツとして美しく揃えて彩色できます。</p>
-              </div>
-            )}
           </header>
 
-          {/* APPLICATION INTERFACES GRID */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* EMBLEM INTERACTIVE SVG DISPLAY (7 blocks) */}
             <div className="lg:col-span-7 flex flex-col items-center">
               <div className="relative w-full max-w-md aspect-square bg-white border border-slate-150 p-6 rounded-3xl shadow-xl flex items-center justify-center">
-                
-                {/* INTERACTIVE SVG */}
                 <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-lg select-none" xmlns="http://www.w3.org/2000/svg">
                   <g fillRule="evenodd">
-                    {/* Left Background Area */}
-                    <path
-                      id="svg-leftBackground"
-                      d="M 200,46 A 154,154 0 0,0 200,354 Z"
-                      fill={colors.leftBackground}
-                      {...getInteractiveProps('leftBackground')}
-                    />
-
-                    {/* Right Background Area */}
-                    <path
-                      id="svg-rightBackground"
-                      d="M 200,46 A 154,154 0 0,1 200,354 Z"
-                      fill={colors.rightBackground}
-                      {...getInteractiveProps('rightBackground')}
-                    />
-
-                    {/* Central Triangle - Left segment */}
-                    <path
-                      id="svg-triangleLeft"
-                      d="M 85,115 L 200,115 L 200,355 Z"
-                      fill={colors.triangleLeft}
-                      {...getInteractiveProps('triangleLeft')}
-                    />
-
-                    {/* Central Triangle - Right segment */}
-                    <path
-                      id="svg-triangleRight"
-                      d="M 200,115 L 315,115 L 200,355 Z"
-                      fill={syncTriangle ? colors.triangleLeft : colors.triangleRight}
-                      {...getInteractiveProps('triangleRight')}
-                    />
-
-                    {/* Gear Frame outer rim */}
-                    <circle
-                      id="svg-gearFrame"
-                      cx="200"
-                      cy="200"
-                      r="164"
-                      fill="none"
-                      stroke={colors.gearFrame}
-                      strokeWidth="20"
-                      {...getInteractiveProps('gearFrame')}
-                    />
+                    <path id="svg-leftBackground" d="M 200,46 A 154,154 0 0,0 200,354 Z" fill={colors.leftBackground} {...getInteractiveProps('leftBackground')} />
+                    <path id="svg-rightBackground" d="M 200,46 A 154,154 0 0,1 200,354 Z" fill={colors.rightBackground} {...getInteractiveProps('rightBackground')} />
+                    <path id="svg-triangleLeft" d="M 85,115 L 200,115 L 200,355 Z" fill={colors.triangleLeft} {...getInteractiveProps('triangleLeft')} />
+                    <path id="svg-triangleRight" d="M 200,115 L 315,115 L 200,355 Z" fill={syncTriangle ? colors.triangleLeft : colors.triangleRight} {...getInteractiveProps('triangleRight')} />
+                    <circle id="svg-gearFrame" cx="200" cy="200" r="164" fill="none" stroke={colors.gearFrame} strokeWidth="20" {...getInteractiveProps('gearFrame')} />
                   </g>
 
-                  {/* SVG HIGHLIGHT OUTLINES ON HOVER */}
                   <g style={{ pointerEvents: 'none' }}>
-                    {hoveredRegion === 'leftBackground' && (
-                      <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />
-                    )}
-                    {hoveredRegion === 'rightBackground' && (
-                      <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />
-                    )}
-                    {isHovered('triangleLeft') && (
-                      <path d="M 85,115 L 200,115 L 200,355 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />
-                    )}
-                    {isHovered('triangleRight') && (
-                      <path d="M 200,115 L 315,115 L 200,355 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />
-                    )}
-                    {hoveredRegion === 'gearFrame' && (
-                      <circle cx="200" cy="200" r="174" fill="none" stroke="#fbbf24" strokeWidth="3.5" />
-                    )}
+                    {hoveredRegion === 'leftBackground' && <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />}
+                    {hoveredRegion === 'rightBackground' && <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />}
+                    {isHovered('triangleLeft') && <path d="M 85,115 L 200,115 L 200,355 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />}
+                    {isHovered('triangleRight') && <path d="M 200,115 L 315,115 L 200,355 Z" fill="none" stroke="#fbbf24" strokeWidth="3" />}
+                    {hoveredRegion === 'gearFrame' && <circle cx="200" cy="200" r="174" fill="none" stroke="#fbbf24" strokeWidth="3.5" />}
                   </g>
 
-                  {/* ACTIVE COMPONENT FOCUS RING */}
                   <g style={{ pointerEvents: 'none' }}>
-                    {activeRegion === 'leftBackground' && (
-                      <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill="none" stroke="#f97316" strokeWidth="2" />
-                    )}
-                    {activeRegion === 'rightBackground' && (
-                      <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill="none" stroke="#f97316" strokeWidth="2" />
-                    )}
-                    {isActive('triangleLeft') && (
-                      <path d="M 85,115 L 200,115 L 200,355 Z" fill="none" stroke="#f97316" strokeWidth="2" />
-                    )}
-                    {isActive('triangleRight') && (
-                      <path d="M 200,115 L 315,115 L 200,355 Z" fill="none" stroke="#f97316" strokeWidth="2" />
-                    )}
-                    {activeRegion === 'gearFrame' && (
-                      <circle cx="200" cy="200" r="174" fill="none" stroke="#f97316" strokeWidth="2" />
-                    )}
+                    {activeRegion === 'leftBackground' && <path d="M 200,46 A 154,154 0 0,0 200,354 Z" fill="none" stroke="#f97316" strokeWidth="2" />}
+                    {activeRegion === 'rightBackground' && <path d="M 200,46 A 154,154 0 0,1 200,354 Z" fill="none" stroke="#f97316" strokeWidth="2" />}
+                    {isActive('triangleLeft') && <path d="M 85,115 L 200,115 L 200,355 Z" fill="none" stroke="#f97316" strokeWidth="2" />}
+                    {isActive('triangleRight') && <path d="M 200,115 L 315,115 L 200,355 Z" fill="none" stroke="#f97316" strokeWidth="2" />}
+                    {activeRegion === 'gearFrame' && <circle cx="200" cy="200" r="174" fill="none" stroke="#f97316" strokeWidth="2" />}
                   </g>
 
-                  {/* STATIC BLACK METALLIC ROD OVERLAYS (No center pin, X stays neatly internally inside boundaries) */}
                   <g style={{ pointerEvents: 'none' }}>
                     <circle cx="200" cy="200" r="154" fill="none" stroke="#1e293b" strokeWidth="3" />
-                    
-                    {/* Vertical Beam */}
                     <line x1="200" y1="46" x2="200" y2="354" stroke="#1e293b" strokeWidth="9" />
                     <line x1="200" y1="46" x2="200" y2="354" stroke="#475569" strokeWidth="5" />
-
-                    {/* Horizontal Beam */}
                     <line x1="85" y1="115" x2="315" y2="115" stroke="#1e293b" strokeWidth="9" />
                     <line x1="85" y1="115" x2="315" y2="115" stroke="#475569" strokeWidth="5" />
-
-                    {/* Triangle Left outer profile */}
                     <line x1="85" y1="115" x2="200" y2="355" stroke="#1e293b" strokeWidth="9" />
                     <line x1="85" y1="115" x2="200" y2="355" stroke="#475569" strokeWidth="5" />
-
-                    {/* Triangle Right outer profile */}
                     <line x1="315" y1="115" x2="200" y2="355" stroke="#1e293b" strokeWidth="9" />
                     <line x1="315" y1="115" x2="200" y2="355" stroke="#475569" strokeWidth="5" />
-
-                    {/* Diagonal Rod Left (Ends on Triangle edge - completely resolved overhang) */}
                     <line x1="85" y1="115" x2="255" y2="241" stroke="#1e293b" strokeWidth="9" />
                     <line x1="85" y1="115" x2="255" y2="241" stroke="#475569" strokeWidth="5" />
-
-                    {/* Diagonal Rod Right (Ends on Triangle edge - completely resolved overhang) */}
                     <line x1="315" y1="115" x2="145" y2="241" stroke="#1e293b" strokeWidth="9" />
                     <line x1="315" y1="115" x2="145" y2="241" stroke="#475569" strokeWidth="5" />
-
-                    {/* Perfect external overlay circles for border details */}
                     <circle cx="200" cy="200" r="174" fill="none" stroke="#1e293b" strokeWidth="3" />
                     <circle cx="200" cy="200" r="170" fill="none" stroke="#475569" strokeWidth="1" />
                   </g>
                 </svg>
-
-                <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-[11px] px-4 py-1.5 rounded-full shadow-lg pointer-events-none flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ backgroundColor: colors[activeRegion] || '#64748b' }} />
-                  <span className="font-semibold tracking-wide">
-                    {hoveredRegion ? `${getRegionLabel(hoveredRegion)} をプレビュー` : `${getRegionLabel(activeRegion)} を編集中`}
-                  </span>
-                </div>
               </div>
 
-              {/* QUICK UTILITIES: EXPORT & CODE */}
-              <div className="w-full max-w-md mt-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3">
-                <span className="text-slate-500 text-xs font-semibold">📤 シミュレーションを書き出す:</span>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={handleCopyImageToClipboard}
-                    className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 active:scale-95"
-                  >
-                    📷 画像をコピー
-                  </button>
-                  <button 
-                    onClick={handleDownloadSvgFile}
-                    className="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition flex items-center gap-1 active:scale-95"
-                  >
-                    💾 SVGDL
-                  </button>
-                </div>
+              <div className="w-full max-w-md mt-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                <span className="text-slate-500 text-xs font-semibold">📤 データ書き出し:</span>
+                <button onClick={handleDownloadSvgFile} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition">💾 SVGダウンロード</button>
               </div>
             </div>
 
-            {/* COLOR EDITING TOOLBARS (5 blocks) */}
             <div className="lg:col-span-5 space-y-6">
-              
-              {/* PARTS AND REGION LIST */}
               <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md">
-                <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-1.5">
-                  <span>📐</span> 対象のパーツを選択
-                </h3>
-                
+                <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-1.5">📐 対象のパーツを選択</h3>
                 <div className="space-y-2">
                   {getActiveRegionsList().map((item) => {
                     const isSelected = activeRegion === item.id || (item.id === 'triangleLeft' && activeRegion === 'triangleRight' && syncTriangle);
-                    const currentHex = colors[item.id] || '#FFFFFF';
                     return (
-                      <button
-                        key={item.id}
-                        onClick={() => handleSelectRegion(item.id)}
-                        className={`w-full text-left p-2.5 rounded-xl border transition flex items-center justify-between ${isSelected ? 'border-indigo-600 bg-indigo-50/40 shadow-inner' : 'border-slate-200 hover:bg-slate-50'}`}
-                      >
+                      <button key={item.id} onClick={() => handleSelectRegion(item.id)} className={`w-full text-left p-2.5 rounded-xl border transition flex items-center justify-between ${isSelected ? 'border-indigo-600 bg-indigo-50/40 shadow-inner' : 'border-slate-200 hover:bg-slate-50'}`}>
                         <div className="flex items-center gap-3">
-                          <span className="w-5 h-5 rounded-full border border-slate-300 shadow-sm flex-shrink-0" style={{ backgroundColor: currentHex }} />
-                          <div>
-                            <div className="text-xs font-extrabold text-slate-700">{item.label}</div>
-                            <div className="text-[10px] text-slate-400 font-normal leading-normal max-w-[200px]">
-                              {item.desc}
-                            </div>
-                          </div>
+                          <span className="w-5 h-5 rounded-full border border-slate-300 shadow-sm flex-shrink-0" style={{ backgroundColor: colors[item.id] || '#FFFFFF' }} />
+                          <div><div className="text-xs font-extrabold text-slate-700">{item.label}</div></div>
                         </div>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase">{currentHex}</span>
                       </button>
                     );
                   })}
                 </div>
-
-                {/* TRIANGLE SYNC SWITCH */}
                 <div className="mt-4 p-3 bg-indigo-50/50 border border-dashed border-indigo-200 rounded-xl flex items-center justify-between gap-4">
-                  <div>
-                    <div className="text-xs font-bold text-indigo-950 flex items-center gap-1">
-                      <span>下三角形を左右連動する</span>
-                      <span className="text-[8px] bg-indigo-100 text-indigo-700 font-extrabold px-1.5 py-0.2 rounded-full">推奨</span>
-                    </div>
-                    <div className="text-[10px] text-slate-500 leading-tight mt-0.5">
-                      中央逆三角の配色を、対称性高く美しく連動します。OFFで左右別々の設定が可能。
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleSyncToggle}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-150 ease-in-out focus:outline-none ${syncTriangle ? 'bg-indigo-600' : 'bg-slate-300'}`}
-                  >
-                    <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-150 ease-in-out ${syncTriangle ? 'translate-x-5' : 'translate-x-0'}`}
-                    />
+                  <div className="text-xs font-bold text-indigo-950">下三角形を左右連動する</div>
+                  <button onClick={handleSyncToggle} className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-150 ease-in-out focus:outline-none ${syncTriangle ? 'bg-indigo-600' : 'bg-slate-300'}`}>
+                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-150 ease-in-out ${syncTriangle ? 'translate-x-5' : 'translate-x-0'}`} />
                   </button>
                 </div>
               </div>
 
-              {/* COLOR FIELD TOOLS */}
               <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                    <span>🖌️</span> カラー塗りつぶしブラシ
-                  </h3>
-                  <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-medium">
-                    選択中: {getRegionLabel(activeRegion).split(' ')[0]}
-                  </span>
-                </div>
-
-                {/* PRESETS */}
-                <div className="grid grid-cols-7 gap-2 mb-4">
+                <h3 className="text-sm font-bold text-slate-800 mb-3">🖌️ カラー塗りつぶしブラシ</h3>
+                <div className="grid grid-cols-6 gap-2 mb-4">
                   {PRESET_PALETTE.map((hex) => (
-                    <button
-                      key={hex}
-                      onClick={() => selectBrushColor(hex)}
-                      className={`aspect-square rounded-full border border-slate-200 color-chip shadow-sm ${brushColor === hex ? 'ring-2 ring-indigo-600 ring-offset-1 scale-110' : ''}`}
-                      style={{ backgroundColor: hex }}
-                      title={hex}
-                    />
+                    <button key={hex} onClick={() => selectBrushColor(hex)} className={`aspect-square rounded-full border border-slate-200 color-chip ${brushColor === hex ? 'ring-2 ring-indigo-600 scale-110' : ''}`} style={{ backgroundColor: hex }} />
                   ))}
                 </div>
-
-                {/* HEX INPUT FORM */}
                 <div className="flex gap-2.5 items-center">
                   <div className="relative flex-1">
                     <span className="absolute left-3 top-2 text-slate-400 text-xs font-mono">#</span>
-                    <input
-                      type="text"
-                      value={hexInput}
-                      onChange={(e) => handleInputChange(e.target.value)}
-                      placeholder="HEXCODE"
-                      maxLength={6}
-                      className="w-full text-xs font-mono font-bold bg-slate-50 border border-slate-300 rounded-lg pl-6 pr-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 uppercase"
-                    />
+                    <input type="text" value={hexInput} onChange={(e) => handleInputChange(e.target.value)} maxLength={6} className="w-full text-xs font-mono font-bold bg-slate-50 border border-slate-300 rounded-lg pl-6 pr-3 py-2 uppercase" />
                   </div>
                   <div className="w-8 h-8 rounded border border-slate-300 shadow-inner flex-shrink-0" style={{ backgroundColor: brushColor }} />
                 </div>
               </div>
 
-              {/* DESIGNER COLOR PALETTES */}
-              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-md">
-                <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-1.5">
-                  <span>🌈</span> おすすめのデザイナー配色セット
-                </h3>
-                
-                <div className="space-y-2.5">
-                  {DESIGN_THEMES.map((theme) => (
-                    <button
-                      key={theme.name}
-                      onClick={() => handlePresetTheme(theme)}
-                      className="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition hover:shadow-sm"
-                    >
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs font-bold text-slate-700">{theme.name}</span>
-                        <div className="flex items-center gap-1">
-                          {Object.values(theme.colors).map((c, idx) => (
-                            <span key={idx} className="w-2.5 h-2.5 rounded-full border border-slate-200 shadow-sm flex-shrink-0" style={{ backgroundColor: c }} />
-                          ))}
-                        </div>
-                      </div>
-                      <div className="text-[10px] text-slate-400 font-normal leading-tight">{theme.desc}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
             </div>
-          </div>
-
-          {/* STANDALONE NOTE */}
-          <footer className="mt-16 text-center text-slate-400 text-xs py-5 border-t border-slate-200/60 font-mono">
-            &copy; 2026 Crafted with Passion for SVG design. Standalone Complete Web App.
-          </footer>
-
-          <div className="mt-6 text-center">
-            <a className="target-link black" href="https://asterisk-morgan.github.io/M.M.I.C._Home/">
-              ホームに戻る
-            </a>
           </div>
         </div>
       );
     }
 
-    // Mounting the application
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    try {
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    } catch (error) {
+      console.error('React Error:', error);
+      document.getElementById('root').innerHTML = '<div style="color:red; padding:20px;"><h2>React実行エラー:</h2><pre>' + error.message + '</pre></div>';
+    }
   </script>
+
+  <!-- HTML領域 -->
+  <div class="mt-6 mb-8 text-center">
+    <a class="font-bold text-slate-600 hover:text-indigo-600 transition" href="https://asterisk-morgan.github.io/M.M.I.C._Home/">
+      ホームに戻る
+    </a>
+  </div>
 </body>
 </html>
